@@ -1,0 +1,53 @@
+#:kivy 1.11.1
+
+
+MyLayout:
+    scr_mngr: scr_mngr
+    orientation:'horizontal'
+
+    BoxLayout:
+        orientation:'vertical'
+        Button:
+            size_hint:.25,.25
+            text:'Login'
+            on_press:
+                root.change_screen("screen1")
+        Button:
+            size_hint:.25,.25
+            text:'Register'
+            on_press:
+                root.change_screen("screen2")
+        Button:
+            size_hint:.25,.25
+            text:'Projects?'
+            on_press:
+                root.change_screen("screen3")
+
+    RelativeLayout:
+        size_hint:.75,1
+        pos_hint:{'x':.25,'y':0}
+        ScreenManager:
+            id: scr_mngr
+            Screen:
+                name: 'screen1'
+                canvas.before:
+                    Rectangle:
+                        pos:self.pos
+                        size:self.size
+                        source:'pics/test.png'
+            Screen:
+                name: 'screen2'
+                canvas.before:
+                    Rectangle:
+                        pos:self.pos
+                        size:self.size
+                        source:'pics/PogChamp.jpg'
+            Screen:
+                name: 'screen3'
+                canvas.before:
+                    Rectangle:
+                        pos:self.pos
+                        size:self.size
+                        source:'pics/Kappa.png'  
+
+            
