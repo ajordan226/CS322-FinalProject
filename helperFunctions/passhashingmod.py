@@ -7,28 +7,36 @@ method is resistant to dictionary and rainbow table attacks.
 See https://cryptobook.nakov.com/mac-and-key-derivation/pbkdf2
 for details
 """
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
 
 import os, import binascii
 from backports.pbkdf2 import pbkdf2_hmac
 
+from .registrationStuff import userExists
+
+cred = credentials.Certificate("../serviceAccountKey.json")
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
+userRef = db.collection(u'Project').document(u'pAKCeGKWGqm1B2MmLMuT').collection(u'Users')
+
+#Creates a key and salt for safe storage in a database
 def hash(password):
     salt = os.urandom(8)
-    key = pbkdf2_hmac("sha256",password.encode("utf8"),salt,80000,32)
+    key = pbkdf2_hmac("sha256",password.encode("utf-8"),salt,80000,32)
     return {"key": key, "salt": salt}
 
-"""
-This function serializes the JSON and stores it in file
-"""
-
-def storeInfo(user,passhash,email):
-    userInfoJSON = {}
-    with open("userinfo.json","r") as f:
-        if os.path.getsize(f) == 0:
-            pass
-        else:
-            userInfoJSON = json.load(f)
-
-    userInfoJSON.update({user:{"passhash":passhash,"email":email}})
-
-    with open("userinfo.json","w") as f:
-        json.dump(pass_json, write_file)
+#Verifies a login attempt into a registered account
+def verifyLogin(user,password):
+    if userExists(user):
+        userDocument = userRef.document(user.encode("utf-8")).get().to_dict()
+        attemptedKey = pbkdf2_hmac("sha256",password.encode("utf-8"),userDocument['salt'],80000,32)
+        success = attemptedKey == userDocument['key']
+        if (not success):
+            print("Incorrect password")
+        return success
+    else:
+        print("An account with that user name does not exist")
+        return False
