@@ -1,0 +1,42 @@
+<BackgroundColor@Widget>
+    background_color: 1, 1, 1, 1
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<BackgroundLabel@Label+BackgroundColor>
+    background_color: 0, 0, 0, 0
+
+<LoginWidget>:
+    name: "login_screen"
+    BoxLayout:
+        size: root.width, root.height
+        orientation: 'vertical'
+        BackgroundLabel:
+            text: "Login Screen"
+            size: .5 * root.width, .33 * root.height
+            background_color: 0.37,0.51,0.53,0.6
+        GridLayout:
+            cols: 2
+            Label:
+                text_size: cm(2), cm(1)
+                text: "Username:"
+            TextInput:
+                id: user
+                label: 'username'
+            Label:
+                text_size: cm(2), cm(1)
+                text: "Password:"
+            TextInput:
+                id: passw
+                label: 'password'
+                password: True
+            Button:
+                text: "login"
+                on_release: pass
+            Button:
+                text: "register"
+                on_release: pass

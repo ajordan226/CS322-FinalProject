@@ -1,0 +1,7 @@
+Dear ${Person_Name},
+
+As a super user I'd like to welcome you to the application.
+Please log in with your email and this temporary password: ${temp}
+
+Kind Regards,
+${Super_User_Name}

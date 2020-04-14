@@ -1,0 +1,12 @@
+Dear ${Person_Name},
+
+I regret to inform you that we could not accept your application
+due to the following reason:
+
+${Reason}
+
+You may submit and appeal and reapply again pleading your case. Thank you for
+your patience.
+
+Kind Regards,
+${Super_User_Name}
