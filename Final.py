@@ -17,6 +17,7 @@ from Projects import SelectableButton,SelectableRecycleGridLayout
 from kivy.uix.recycleview import RecycleView
 from kivy.properties import ObjectProperty, StringProperty,BooleanProperty,ListProperty
 from kivy.uix.popup import Popup
+from kivy.clock import Clock
 
 
 cred = credentials.Certificate("CS322-FinalProject\serviceAccountKey.json")
@@ -38,22 +39,21 @@ class Projects(Screen):
         super(Projects,self).__init__(**kwargs)
         self.getProjects()
 
+    def on_enter(self):
+        self.getProjects()
+
     def newProject(self):
         self.Project = newEntry()
         print('popup')
         self.Project.open()
 
     def getProjects(self):
+        self.data_projects.clear()
         docs = db.collection(u'Project').stream()
         for doc in docs:
             temp = doc.to_dict()
             print(temp)
             self.data_projects.append(temp['name'])
-
-
-        
-        
-    
 
 class MyLayout(FloatLayout):
 
@@ -62,7 +62,7 @@ class MyLayout(FloatLayout):
     def change_screen(self, screen, *args):
         self.scr_mngr.current = screen
 
-class newEntry(Popup):
+class newEntry(Screen):
     
     project_name = ObjectProperty(None)
     project_info = ObjectProperty(None)
@@ -74,8 +74,17 @@ class newEntry(Popup):
             u'name': self.project_name.text
         }
         db.collection(u'Project').document().set(data)
-        Projects.getProjects()
-        Popup.dismiss(self)
+        
+
+    def switch_screenback(self,*args):
+        app = App.get_running_app()
+        app.root.scr_mngr.current = "Projects"
+        
+
+    def clocked_switch(self):
+        Clock.schedule_once(self.switch_screenback,.0)
+
+
 
 class MyApp(App):
     
