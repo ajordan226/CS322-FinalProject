@@ -1,6 +1,8 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+from kivy.uix.popup import Popup
+
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.core.window import Window
@@ -9,9 +11,16 @@ from kivy.uix.screenmanager import Screen,ScreenManager
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import ObjectProperty
+from kivy.uix.button import Button
+from kivy.uix.recycleview.views import RecycleDataViewBehavior
+from Projects import SelectableButton,SelectableRecycleGridLayout
+from kivy.uix.recycleview import RecycleView
+from kivy.properties import ObjectProperty, StringProperty,BooleanProperty,ListProperty
+from kivy.uix.popup import Popup
 
-cred = credentials.Certificate("serviceAccountKey.json")
-firebase_admin.initialize_app(cred)
+
+cred = credentials.Certificate("CS322-FinalProject\serviceAccountKey.json")
+eff = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 
@@ -21,8 +30,30 @@ class screen1(Screen):
     pass
 class screen2(Screen):
     pass
-class screen3(Screen):
-    pass
+class Projects(Screen):
+    
+    data_projects = ListProperty([])
+    
+    def __init__(self,**kwargs):
+        super(Projects,self).__init__(**kwargs)
+        self.getProjects()
+
+    def newProject(self):
+        self.Project = newEntry()
+        print('popup')
+        self.Project.open()
+
+    def getProjects(self):
+        docs = db.collection(u'Project').stream()
+        for doc in docs:
+            temp = doc.to_dict()
+            print(temp)
+            self.data_projects.append(temp['name'])
+
+
+        
+        
+    
 
 class MyLayout(FloatLayout):
 
@@ -30,17 +61,24 @@ class MyLayout(FloatLayout):
 
     def change_screen(self, screen, *args):
         self.scr_mngr.current = screen
-        doc_ref = db.collection(u'Project').document(u'pAKCeGKWGqm1B2MmLMuT')
 
-        try:
-            doc = doc_ref.get()
-            print(u'Document data: {}'.format(doc.to_dict()))
-        except google.cloud.exceptions.NotFound:
-            print(u'No such document!')
+class newEntry(Popup):
+    
+    project_name = ObjectProperty(None)
+    project_info = ObjectProperty(None)
+    
+    def submit(self):
 
+        data = {
+            u'info': self.project_info.text,
+            u'name': self.project_name.text
+        }
+        db.collection(u'Project').document().set(data)
+        Projects.getProjects()
+        Popup.dismiss(self)
 
 class MyApp(App):
-
+    
     def build(self):
         return Builder.load_file('Final.kv')
 
