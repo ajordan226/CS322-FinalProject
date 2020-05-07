@@ -28,10 +28,10 @@ def userExists(user):
 #Verifies each field of the registration page before sending to the superuser for examination
 def register(username,realname,email,credentials,reference):
     if usernameValid(user):
-        if (not userExists(user)):
+        if (userExists(user)):
             if (not realname.strip()):
                 if (not credentials.strip()):
-                    if userExists(reference):
+                    if (not userExists(reference)):
                         pass #Once a superuser is defined we send them this information before it is written to the DB.
                     else:
                         print("Reference does not exist")
