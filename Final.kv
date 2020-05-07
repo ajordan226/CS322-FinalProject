@@ -21,7 +21,7 @@ MyLayout:
             size_hint:.25,.25
             text:'Projects?'
             on_press:
-                root.change_screen("screen3")
+                root.change_screen("Projects")
 
     RelativeLayout:
         size_hint:.75,1
@@ -42,12 +42,76 @@ MyLayout:
                         pos:self.pos
                         size:self.size
                         source:'pics/PogChamp.jpg'
-            Screen:
-                name: 'screen3'
-                canvas.before:
-                    Rectangle:
-                        pos:self.pos
-                        size:self.size
-                        source:'pics/Kappa.png'  
+            Projects:
+                name: 'Projects'
+                
+<Projects>:
+    RelativeLayout:
+        Button:
+            text: 'Create New Project'
+            pos_hint: {'x':.25,'y':.05}
+            size_hint:(.5,.1)
+            on_release:
+                root.newProject()
+        RelativeLayout:
+            size_hint:(1,.75)
+            pos_hint: {'x':.10,'y':.2}
+            RecycleView:
+                viewclass: 'SelectableButton'
+                size_hint:(.8,.9)
+                data: [{'text': str(x)} for x in root.data_projects]
+                SelectableRecycleGridLayout:
+                    id: rv
+                    cols: 4
+                    default_size: None, dp(45)
+                    default_size_hint: .9, None
 
+                    size_hint_y: None
+                    height: self.minimum_height
+                    orientation: 'vertical'
+                    multiselect: False
+					                   
+<newEntry>:
+    project_name:projectName
+    project_info:projectInfo
+    auto_dismiss: False
+    title: ""
+    separator_height: 0
+    pos_hint: {'x':.25,'y':0}
+    size_hint: .75,1
+    FloatLayout:
+
+        Label:
+            text: 'Project Name'
+            font_size: 25
+            pos_hint:{'x':0,'y':.45}
+        TextInput:
+            id: projectName
+            size_hint:.5,.1
+            pos_hint:{'x':.25,'y':.8}
+        Label:
+            text: 'Project Description'
+            font_size: 25
+            pos_hint: {'x':0,'y':.25}
+        TextInput: 
+            id:projectInfo
+            size_hint: .75,.35
+            pos_hint:{'x':.125,'y':.35}
+  
+ 
+        BoxLayout:
+            orientation:'horizontal'
+            pos_hint:{'x':0,'y':0}
+            Button:
+                text: 'Close'
+                size_hint: .5,.1
+                on_release:
+                    root.dismiss()
+            Button:
+                text: 'Submit'
+                size_hint: .5,.1
+                on_release:
+                    root.submit()
+
+        
             
