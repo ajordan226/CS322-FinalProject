@@ -2,7 +2,6 @@ class Poll:
     def __init__(self, group, pollType, unanimous):
         self.pollType = pollType
         self.unanimous = unanimous
-
         self.poll = {}
         for x in group:
             self.poll[x] = None
@@ -26,9 +25,9 @@ class Poll:
             maxVal = max(resultDict.values())
             #extracts the maximum value
             tieList = []
-            for user in self.poll.keys():
-                if self.poll[user] == maxVal:
-                    tieList.append(user)
+            for answer in resultDict.keys():
+                if resultDict[answer] == maxVal:
+                    tieList.append(answer)
             #extracts all
             if len(tieList) == 1:
                 return True, tieList
