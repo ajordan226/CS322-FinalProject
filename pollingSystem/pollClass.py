@@ -30,6 +30,6 @@ class Poll:
                     tieList.append(answer)
             #extracts all
             if len(tieList) == 1:
-                return True, tieList
+                return True, tieList[0]
             else:
-                return False, tieList
+                return False
