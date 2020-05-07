@@ -16,7 +16,7 @@ from backports.pbkdf2 import pbkdf2_hmac
 
 from .registrationStuff import userExists
 
-cred = credentials.Certificate("../serviceAccountKey.json")
+cred = credentials.Certificate("../UserClasses/serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 

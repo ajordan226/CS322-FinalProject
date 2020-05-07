@@ -9,14 +9,14 @@ s.starttls()
 
 s.login("","")
 
-def sendMail(name,email):
+def sendMail(email,subject,messageTxt):
     msg = MIMEMultipart()
 
-    message = "This is a test"
+    message = messageTxt
 
     msg['From']="foo@gmail.com"
     msg['To']=email
-    msg['Subject']="Registration Status"
+    msg['Subject']=subject
 
     msg.attach(MIMEText(message,'plain'))
 
