@@ -82,7 +82,7 @@ class newEntry(Screen):
         
 
     def clocked_switch(self):
-        Clock.schedule_once(self.switch_screenback,.5)
+        Clock.schedule_once(self.switch_screenback,.0)
 
 
 
