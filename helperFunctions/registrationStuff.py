@@ -26,8 +26,8 @@ def userExists(user):
 
 #Verifies each field of the registration page before sending to the superuser for examination
 def register(username,realname,email,credentials,reference):
-    if usernameValid(user):
-        if (userExists(user)):
+    if usernameValid(username):
+        if (not userExists(username)):
             if (not realname.strip()):
                 if (not credentials.strip()):
                     if (not userExists(reference)):
