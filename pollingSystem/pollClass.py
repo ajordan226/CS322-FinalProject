@@ -10,6 +10,12 @@ class Poll:
         if self.poll.has_key(user) and self.poll[user] is None:
             self.poll[user] = userVote
 
+    def full():
+        result = True
+        for x in self.poll.values():
+            result = result and (not x is None)
+        return result
+
     def checkPoll():
         if self.unanimous:
             result = True

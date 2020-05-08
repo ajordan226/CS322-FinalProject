@@ -49,11 +49,6 @@ def acceptInvite(user, groupName, inviteCode):
     else:
         return False
 
-def appendToListAttrib(user,attrib,value):
-    userDocument = databaseAccessors.getUserDocument(user)
-    newAttribList = databaseAccessors[attrib].append(value)
-    userDocument.update({attrib.encode("utf-8") : newAttribList})
-
 def addWhiteList(user,userToAdd):
     appendToListAttrib(user,"whitelist",userToAdd)
 

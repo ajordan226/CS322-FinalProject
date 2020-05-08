@@ -11,3 +11,15 @@ def getUserDocument(user):
 
 def getProjectDocument(groupName):
     return db.collection(u'Project').document(groupName.encode("utf-8")).get().to_dict()
+
+def appendToListAttrib(user,attrib,value):
+    userDocument = getUserDocument(user)
+    if not value in databaseAccessors[attrib]:
+        newAttribList = databaseAccessors[attrib].append(value)
+        userDocument.update({attrib.encode("utf-8") : newAttribList})
+
+def removeUserFromGroup(userToRemove,groupName):
+    groupProjectDoc = getProjectDocument(group)
+    if userToRemove in groupProjectDoc['members']:
+        newMemberList = groupProjectDoc.remove(userToRemove)
+        groupProjectDoc.update({u'members' : newMemberList})
