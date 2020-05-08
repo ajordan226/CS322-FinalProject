@@ -46,8 +46,33 @@ MyLayout:
                 name: 'Projects'
             newEntry:
                 name: 'newEntry'
+            GroupPage:
+                name: 'GroupPage'
+<GroupPage>:
+    pos_hint: {'x':.125,'y':0.0125}
+    size_hint: .75,1
+    FloatLayout:
+
+        GridLayout:
+            rows:2
+            cols:2
+            size_hint:None,None
+            size: root.width,root.height/4
+            Button:
+                text: 'MessageBoard'
+            Button:
+                text: 'UserList'
+            Button:
+                text: 'Back'
+                on_release:
+                    root.manager.current = 'Projects'
+            Button:
+                text: 'Poll'
                 
+
+
 <Projects>:
+    
     RelativeLayout:
         Button:
             text: 'Create New Project'
@@ -67,18 +92,16 @@ MyLayout:
                     cols: 4
                     default_size: None, dp(45)
                     default_size_hint: .9, None
-
                     size_hint_y: None
                     height: self.minimum_height
                     orientation: 'vertical'
                     multiselect: False
+                    
+                    
 					                   
 <newEntry>:
     project_name:projectName
     project_info:projectInfo
-    auto_dismiss: False
-    title: ""
-    separator_height: 0
     pos_hint: {'x':.125,'y':0.0125}
     size_hint: .75,1
     FloatLayout:
