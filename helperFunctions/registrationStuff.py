@@ -7,7 +7,6 @@ cred = credentials.Certificate("../serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-userRef = db.collection(u'Project').document(u'pAKCeGKWGqm1B2MmLMuT').collection(u'Users')
 
 #Predicate which returns true if a password is at least 6 characters long, mixed case, and has a number
 def passwordValid(pass):
@@ -23,7 +22,7 @@ def emailValid(email):
 
 #Predicate which returns true if the referredUser exists
 def userExists(user):
-    return userRef.document(referredUser.encode('utf-8')).get().exists
+    return db.collection(u'User').document(user.encode("utf-8")).get().exists
 
 #Verifies each field of the registration page before sending to the superuser for examination
 def register(username,realname,email,credentials,reference):

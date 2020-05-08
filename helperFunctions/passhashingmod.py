@@ -15,12 +15,12 @@ import os, import binascii
 from backports.pbkdf2 import pbkdf2_hmac
 
 from .registrationStuff import userExists
+from databaseAccessors import getUserDocument
 
 cred = credentials.Certificate("../UserClasses/serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-userRef = db.collection(u'Project').document(u'pAKCeGKWGqm1B2MmLMuT').collection(u'Users')
 
 #Creates a key and salt for safe storage in a database
 def hash(password):
@@ -31,7 +31,7 @@ def hash(password):
 #Verifies a login attempt into a registered account
 def verifyLogin(user,password):
     if userExists(user):
-        userDocument = userRef.document(user.encode("utf-8")).get().to_dict()
+        userDocument = getUserDocument(user)
         attemptedKey = pbkdf2_hmac("sha256",password.encode("utf-8"),userDocument['salt'],80000,32)
         success = attemptedKey == userDocument['key']
         if (not success):
