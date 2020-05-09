@@ -9,7 +9,7 @@ def startGroupPoll(groupName,voteType,excludedVoter = ""):
     groupProjectDoc = updateDB.getProjectDocument(groupName)
     voters = []
     if excludedVoter.strip():
-        voters = groupProjectDoc['members'].remove(personToKick)
+        voters = groupProjectDoc['members'].remove(excludedVoter)
     else:
         voters = groupProjectDoc['members']
     groupPoll = poll.createPoll(voters)

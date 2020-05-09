@@ -17,7 +17,7 @@ def getProjectDocument(groupName):
     return db.collection(u'Project').document(groupName.encode("utf-8")).get().to_dict()
 
 def isBlacklisted(user):
-    return return db.collection(u'Blacklist').document(user.encode("utf-8")).get().exists
+    return db.collection(u'Blacklist').document(user.encode("utf-8")).get().exists
 
 def appendToListAttrib(user,attrib,value):
     userDocument = getUserDocument(user)
