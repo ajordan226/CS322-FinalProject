@@ -16,6 +16,9 @@ def getUserDocument(user):
 def getProjectDocument(groupName):
     return db.collection(u'Project').document(groupName.encode("utf-8")).get().to_dict()
 
+def isBlacklisted(user):
+    return return db.collection(u'Blacklist').document(user.encode("utf-8")).get().exists
+
 def appendToListAttrib(user,attrib,value):
     userDocument = getUserDocument(user)
     if value not in userDocument[attrib]:
@@ -28,6 +31,11 @@ def removeUserFromGroup(userToRemove,groupName):
         newMemberList = groupProjectDoc.remove(userToRemove)
         groupProjectDoc.update({u'members' : newMemberList})
 
+def banUser(userToRemove):
+    userDocument = getUserDocument(userToRemove)
+    db.collection(u'Blacklist').document(userToRemove.encode("utf-8")).set({u'email' : userDocument['email'], u'realname' : userDocument['realname']})
+    userDocument.delete()
+
 def update_rep(user, reputation):
     if userExists(user):
         info = getUserDocument(user)
@@ -37,11 +45,19 @@ def update_warnings(user, groupName):
     if userExists(user):
         info = getUserDocument(user)
         info['warnings']+=1
-    if info['warnings'] == 3:
+    if info['warnings'] % 3 == 0:
         update_rep(user, -5)
         removeUserFromGroup(user, groupName)
+        if info['reputation'] < 0:
+            banUser(user)
+        elif info['reputation'] < 25:
+            info['VIP'] = False
 
 def update_compliments(user):
     if userExists(user):
         info = getUserDocument(user)
         info['compliments']+=1
+    if info['compliments'] % 3 == 0:
+        update_rep(user, 5)
+        if info['reputation'] >= 30:
+            info['VIP'] = True
