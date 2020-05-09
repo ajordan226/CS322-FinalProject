@@ -15,6 +15,19 @@ def full(poll):
         result = result and (not answer is None)
     return result
 
+def getWinners(poll):
+    resultDict = {}
+    for answer in poll.values():
+        resultDict[answer] = resultDict.get(answer,0) + 1
+    #counts the results
+    maxVal = max(resultDict.values())
+    #extracts the maximum value
+    tieList = []
+    for answer in resultDict.keys():
+        if resultDict[answer] == maxVal:
+            tieList.append(answer)
+    return tieList
+
 def checkPoll(poll,unanimous):
     if unanimous:
         result = True
@@ -23,18 +36,9 @@ def checkPoll(poll,unanimous):
         return result
     else:
         #initializa an empty dictionary to count results
-        resultDict = {}
-        for answer in poll.values():
-            resultDict[answer] = resultDict.get(answer,0) + 1
-        #counts the results
-        maxVal = max(resultDict.values())
-        #extracts the maximum value
-        tieList = []
-        for answer in resultDict.keys():
-            if resultDict[answer] == maxVal:
-                tieList.append(answer)
+        tieList = getWinners(poll)
         #extracts all
         if len(tieList) == 1:
-            return True, tieList[0]
+            return True
         else:
             return False
