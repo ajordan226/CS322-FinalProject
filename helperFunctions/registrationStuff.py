@@ -28,7 +28,7 @@ def userExists(user):
 def register(username,realname,email,credentials,reference):
     if usernameValid(username):
         if (not userExists(username)):
-            if (not realname.strip()):
+            if (realname.strip()):
                 if (not credentials.strip()):
                     if (not userExists(reference)):
                         pass #Once a superuser is defined we send them this information before it is written to the DB.
