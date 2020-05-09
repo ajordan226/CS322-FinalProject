@@ -11,12 +11,12 @@ MyLayout:
             size_hint:.25,.25
             text:'Login'
             on_press:
-                root.change_screen("screen1")
+                root.change_screen("Login")
         Button:
             size_hint:.25,.25
             text:'Register'
             on_press:
-                root.change_screen("screen2")
+                root.change_screen("Register")
         Button:
             size_hint:.25,.25
             text:'Projects?'
@@ -28,26 +28,94 @@ MyLayout:
         pos_hint:{'x':.25,'y':0}
         ScreenManager:
             id: scr_mngr
-            Screen:
-                name: 'screen1'
-                canvas.before:
-                    Rectangle:
-                        pos:self.pos
-                        size:self.size
-                        source:'pics/test.png'
-            Screen:
-                name: 'screen2'
-                canvas.before:
-                    Rectangle:
-                        pos:self.pos
-                        size:self.size
-                        source:'pics/PogChamp.jpg'
+            Login:
+                name: 'Login'
+            Register:
+                name: 'Register'
             Projects:
                 name: 'Projects'
             newEntry:
                 name: 'newEntry'
             GroupPage:
                 name: 'GroupPage'
+<Register>:
+    FloatLayout:
+        Label:
+            pos_hint:{'x':-.15,'y':.4}
+            font_size: '30dp'            
+            text: "Username:"
+        TextInput:
+            id: username
+            size_hint: .275,.05
+            pos_hint:{'x':.45,'y':.875}
+            label: 'username'
+        Label:
+            pos_hint:{'x':-.15,'y':.325}
+            font_size: '30dp'
+            text: "RealName:"
+        TextInput:
+            id: realname
+            size_hint: .275,.05
+            pos_hint:{'x':.45,'y':.8}
+        Label:
+            pos_hint:{'x':-.1925,'y':.25}
+            font_size: '30dp'
+            text: "Email:"
+        TextInput:
+            id: email
+            size_hint: .35,.05
+            pos_hint:{'x':.375,'y':.725}
+        Label:
+            pos_hint:{'x':-.1525,'y':.175}
+            font_size: '30dp'
+            text: "Reference:"
+        TextInput:
+            id: reference
+            size_hint: .275,.05
+            pos_hint:{'x':.45,'y':.65}
+        Label:
+            pos_hint:{'x':-.3,'y':.1}
+            font_size: '30dp'
+            text: "Credentials:"
+        TextInput:
+            id: credentials
+            size_hint: .8,.4
+            pos_hint:{'x':.1,'y':.15}
+        Button:
+            text: "Submit"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.29,'y':.05}
+            on_release: pass
+<Login>:
+    FloatLayout:
+        Label:
+            pos_hint:{'x':-.15,'y':.1}
+            font_size: '30dp'            
+            text: "Username:"
+        TextInput:
+            id: user
+            size_hint: .275,.05
+            pos_hint:{'x':.45,'y':.575}
+            label: 'username'
+        Label:
+            pos_hint:{'x':-.15,'y':.025}
+            font_size: '30dp'
+            text: "Password:"
+        TextInput:
+            id: password
+            size_hint: .275,.05
+            pos_hint:{'x':.45,'y':.5}
+            label: 'password'
+            password: True
+        Button:
+            text: "Login"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.29,'y':.4}
+            on_release: pass
+            
+
 <GroupPage>:
     pos_hint: {'x':.125,'y':0.0125}
     size_hint: .75,1
