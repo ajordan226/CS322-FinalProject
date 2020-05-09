@@ -26,9 +26,9 @@ db = firestore.client()
 
 Window.size = (1024,768)
 
-class screen1(Screen):
+class Login(Screen):
     pass
-class screen2(Screen):
+class Register(Screen):
     pass
 class GroupPage(Screen):
     pass
