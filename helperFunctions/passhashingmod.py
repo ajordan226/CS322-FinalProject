@@ -15,7 +15,7 @@ import os, import binascii
 from backports.pbkdf2 import pbkdf2_hmac
 
 from .registrationStuff import userExists
-from databaseAccessors import getUserDocument
+from updateDB import getUserDocument
 
 cred = credentials.Certificate("../UserClasses/serviceAccountKey.json")
 firebase_admin.initialize_app(cred)

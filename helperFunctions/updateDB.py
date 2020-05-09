@@ -2,17 +2,31 @@ import re
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-import sys, os
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'helperFunctions'))
-sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
-import registrationStuff
-import databaseAccessors
+from registrationStuff import userExists
 
 
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
+
+def getUserDocument(user):
+    return db.collection(u'User').document(user.encode("utf-8")).get().to_dict()
+
+def getProjectDocument(groupName):
+    return db.collection(u'Project').document(groupName.encode("utf-8")).get().to_dict()
+
+def appendToListAttrib(user,attrib,value):
+    userDocument = getUserDocument(user)
+    if value not in userDocument[attrib]:
+        newAttribList = userDocument[attrib].append(value)
+        userDocument.update({attrib.encode("utf-8") : newAttribList})
+
+def removeUserFromGroup(userToRemove,groupName):
+    groupProjectDoc = getProjectDocument(groupName)
+    if userToRemove in groupProjectDoc['members']:
+        newMemberList = groupProjectDoc.remove(userToRemove)
+        groupProjectDoc.update({u'members' : newMemberList})
 
 def update_rep(user, reputation):
     if userExists(user):
@@ -25,6 +39,7 @@ def update_warnings(user, groupName):
         info['warnings']+=1
     if info['warnings'] == 3:
         update_rep(user, -5)
+        removeUserFromGroup(user, groupName)
 
 def update_compliments(user):
     if userExists(user):

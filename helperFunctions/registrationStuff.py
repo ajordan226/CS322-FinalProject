@@ -9,8 +9,8 @@ db = firestore.client()
 
 
 #Predicate which returns true if a password is at least 6 characters long, mixed case, and has a number
-def passwordValid(pass):
-    return True if (re.match(r'(?=.*[a-z]{1,})(?=.*[A-Z]{1,})(?=.*[0-9]{1,})',pass) and (len(pass) >= 6)) else False
+def passwordValid(password):
+    return True if (re.match(r'(?=.*[a-z]{1,})(?=.*[A-Z]{1,})(?=.*[0-9]{1,})',password) and (len(password) >= 6)) else False
 
 #Predicate which returns true if a username is alphanumeric and is of size 5
 def usernameValid(user):
