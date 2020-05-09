@@ -7,7 +7,7 @@ print(sys.path)
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'helperFunctions'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
 import emailsender
-import databaseAccessors
+import updateDB
 
 
 import firebase_admin
@@ -19,10 +19,10 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 def inviteUser(sender, receiver, groupName):
-    userDocument = databaseAccessors.getUserDocument(reciever)
+    userDocument = updateDB.getUserDocument(receiver)
     if sender in userDocument['whitelist']:
-        groupProjectDoc = db.collection(u'Project).document(groupName.encode("utf-8")).get().to_dict()
-        newMemberList = groupProjectDoc["members"].append(user)
+        groupProjectDoc = updateDB.getProjectDocument(groupName)
+        newMemberList = groupProjectDoc["members"].append(receiver)
         groupProjectDoc.update({u'members' : newMemberList})
         emailsender.sendMail(userDocument['email'],"Invite to " + groupName, "Hello you have recieved an invite to " + groupName + ". This was a whitelisted user so you have immediete access")
         userDocument.update({ (groupName+"InviteCode").encode("utf-8") : randStr})
@@ -40,9 +40,9 @@ def inviteUser(sender, receiver, groupName):
         pass
 
 def acceptInvite(user, groupName, inviteCode):
-    userDocument = databaseAccessors.getUserDocument(user)
+    userDocument = updateDB.getUserDocument(user)
     if inviteCode == userDocument[groupName+"InviteCode"]:
-        groupProjectDoc = db.collection(u'Project).document(groupName.encode("utf-8")).get().to_dict()
+        groupProjectDoc = updateDB.getProjectDocument(groupName)
         newMemberList = groupProjectDoc["members"].append(user)
         groupProjectDoc.update({u'members' : newMemberList})
         return True
@@ -50,8 +50,8 @@ def acceptInvite(user, groupName, inviteCode):
         return False
 
 def addWhiteList(user,userToAdd):
-    appendToListAttrib(user,"whitelist",userToAdd)
+    updateDB.appendToListAttrib(user,"whitelist",userToAdd)
 
 
 def addBlackList(user,userToAdd):
-    appendToListAttrib(user,"blacklist",userToAdd)
+    updateDB.appendToListAttrib(user,"blacklist",userToAdd)
