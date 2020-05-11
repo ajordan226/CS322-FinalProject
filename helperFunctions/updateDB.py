@@ -31,6 +31,11 @@ def removeUserFromGroup(userToRemove,groupName):
         newMemberList = groupProjectDoc.remove(userToRemove)
         groupProjectDoc.update({u'members' : newMemberList})
 
+def isMember(user,groupName):
+    groupProjectDoc = getProjectDocument(groupName)
+    return user in groupProjectDoc['members']
+
+
 def banUser(userToRemove):
     userDocument = getUserDocument(userToRemove)
     db.collection(u'Blacklist').document(userToRemove.encode("utf-8")).set({u'email' : userDocument['email'], u'realname' : userDocument['realname']})
