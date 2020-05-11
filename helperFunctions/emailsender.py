@@ -7,22 +7,21 @@ message_template = ""
 s = smtplib.SMTP("smtp.gmail.com",587)
 s.starttls()
 
-s.login("","")
+s.login("pamjje40@gmail.com","Cs322proj")
 
 def sendMail(email,subject,messageTxt):
     msg = MIMEMultipart()
 
-    message = messageTxt
-
-    msg['From']="foo@gmail.com"
+    msg['From']="pamjje40@gmail.com"
     msg['To']=email
     msg['Subject']=subject
 
-    msg.attach(MIMEText(message,'plain'))
+    msg.attach(MIMEText(messageTxt,'plain'))
 
     s.send_message(msg)
 
     del msg
 
     s.quit()
-sendMail("", "")
+
+#sendMail("pamjje40@gmail.com","This is a test","testing")
