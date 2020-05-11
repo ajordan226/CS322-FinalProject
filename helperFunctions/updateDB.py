@@ -61,3 +61,7 @@ def update_compliments(user):
         update_rep(user, 5)
         if info['reputation'] >= 30:
             info['VIP'] = True
+
+def disbandGroup(groupName)
+    getProjectDocument(groupName).delete()
+    #destruction of GUI stuff
