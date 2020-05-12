@@ -134,3 +134,11 @@ def addMessage(user, groupName, message):
         if msgList[i] in bad_words:
             msgList[i] = "FeelsBad"
     forumPosts['post' + newCount] = [user," ".join(msgList)]
+
+def getMessages(groupName):
+    forumPosts = db.collection(groupName).document('forum').get().to_dict()
+    count = forumPosts['count']
+    postList = []
+    for i in range(1,count+1):
+        postList.append(forumPosts['post'+i])
+    return forumPosts
