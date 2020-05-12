@@ -17,11 +17,13 @@ from kivy.uix.recycleview import RecycleView
 from kivy.properties import ObjectProperty, StringProperty,BooleanProperty,ListProperty
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
+import re
+from backports.pbkdf2 import pbkdf2_hmac
+from helperFunctions.registrationStuff import *
+from helperFunctions.emailsender import sendMail
 
 
-cred = credentials.Certificate("serviceAccountKey.json")
-eff = firebase_admin.initialize_app(cred)
-db = firestore.client()
+
 
 
 Window.size = (1024,768)
@@ -29,7 +31,38 @@ Window.size = (1024,768)
 class Login(Screen):
     pass
 class Register(Screen):
-    pass
+
+    #Verifies each field of the registration page before sending to the superuser for examination
+    def register(self,username,realname,email,credentials,reference):
+        username = str(self.ids.username.text)
+        realname = str(self.ids.realname.text)
+        email = str(self.ids.email.text)
+        credentials = str(self.ids.credentials.text)
+        reference = str(self.ids.reference.text)
+        print(type(username))
+        if usernameValid(username):
+            if (not userExists(username)):
+                if (realname.strip()):
+                    if (credentials.strip()):
+                        if (userExists(reference)):
+                            sendMail('pamjje40@gmail.com', 'Registration document', 
+                            '''Hello Super User. 
+                            {value} is their username. 
+                            {value1} is their realname. 
+                            {value2} is their email. 
+                            {value3} is their credentials. 
+                            {value4} is their reference '''.format(value = username, value1 = realname, value2 = email,
+                            value3 = credentials, value4 = reference))
+                        else:
+                            print("Reference does not exist")
+                    else:
+                        print("Credentials field is empty")
+                else:
+                    print("Name field is empty")
+            else:
+                print("Username already exists")
+        else:
+            print("A username must be alphanumeric only")
 class GroupPage(Screen):
     pass
 class Projects(Screen):

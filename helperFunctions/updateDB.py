@@ -11,19 +11,19 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 def getUserDocument(user):
-    return db.collection(u'User').document(user.encode("utf-8")).get().to_dict()
+    return db.collection(u'User').document(user).get().to_dict()
 
 def getProjectDocument(groupName):
-    return db.collection(u'Project').document(groupName.encode("utf-8")).get().to_dict()
+    return db.collection(u'Project').document(groupName).get().to_dict()
 
 def isBlacklisted(user):
-    return db.collection(u'Blacklist').document(user.encode("utf-8")).get().exists
+    return db.collection(u'Blacklist').document(user).get().exists
 
 def appendToListAttrib(user,attrib,value):
     userDocument = getUserDocument(user)
     if value not in userDocument[attrib]:
         newAttribList = userDocument[attrib].append(value)
-        userDocument.update({attrib.encode("utf-8") : newAttribList})
+        userDocument.update({attrib : newAttribList})
 
 def removeUserFromGroup(userToRemove,groupName):
     groupProjectDoc = getProjectDocument(groupName)
@@ -38,7 +38,7 @@ def isMember(user,groupName):
 
 def banUser(userToRemove):
     userDocument = getUserDocument(userToRemove)
-    db.collection(u'Blacklist').document(userToRemove.encode("utf-8")).set({u'email' : userDocument['email'], u'realname' : userDocument['realname']})
+    db.collection(u'Blacklist').document(userToRemove).set({u'email' : userDocument['email'], u'realname' : userDocument['realname']})
     userDocument.delete()
 
 def update_rep(user, reputation):
@@ -67,6 +67,6 @@ def update_compliments(user):
         if info['reputation'] >= 30:
             info['VIP'] = True
 
-def disbandGroup(groupName)
+def disbandGroup(groupName):
     getProjectDocument(groupName).delete()
     #destruction of GUI stuff

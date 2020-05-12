@@ -86,7 +86,8 @@ MyLayout:
             font_size: '30dp'
             size_hint: .4,.075
             pos_hint:{'x':.29,'y':.05}
-            on_release: pass
+            on_release: 
+                root.register(username,realname,email,credentials,reference)
 <Login>:
     FloatLayout:
         Label:
