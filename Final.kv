@@ -114,7 +114,8 @@ MyLayout:
             font_size: '30dp'
             size_hint: .4,.075
             pos_hint:{'x':.29,'y':.4}
-            on_release: pass
+            on_release: 
+                root.verifyLogin(user, password)
             
 
 <GroupPage>:

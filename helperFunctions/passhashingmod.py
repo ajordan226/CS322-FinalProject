@@ -7,7 +7,8 @@ method is resistant to dictionary and rainbow table attacks.
 See https://cryptobook.nakov.com/mac-and-key-derivation/pbkdf2
 for details
 """
-import os, import binascii
+import os 
+import binascii
 from backports.pbkdf2 import pbkdf2_hmac
 
 #Creates a key and salt for safe storage in a database

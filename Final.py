@@ -21,6 +21,7 @@ import re
 from backports.pbkdf2 import pbkdf2_hmac
 from helperFunctions.registrationStuff import *
 from helperFunctions.emailsender import sendMail
+from helperFunctions.updateDB import *
 
 
 
@@ -29,7 +30,20 @@ from helperFunctions.emailsender import sendMail
 Window.size = (1024,768)
 
 class Login(Screen):
-    pass
+    def verifyLogin(self,user,password):
+        user = str(self.ids.user.text)
+        password = str(self.ids.password.text)
+        if userExists(user):
+            userDocument = getUserDocument(user)
+            attemptedKey = pbkdf2_hmac("sha256",password.encode('utf-8'),userDocument['salt'],80000,32)
+            success = attemptedKey == userDocument['key']
+            if (not success):
+                print("Incorrect password")
+            print('success')
+        else:
+            print("An account with that user name does not exist")
+            return False
+
 class Register(Screen):
 
     #Verifies each field of the registration page before sending to the superuser for examination
@@ -39,7 +53,6 @@ class Register(Screen):
         email = str(self.ids.email.text)
         credentials = str(self.ids.credentials.text)
         reference = str(self.ids.reference.text)
-        print(type(username))
         if usernameValid(username):
             if (not userExists(username)):
                 if (realname.strip()):
@@ -53,6 +66,8 @@ class Register(Screen):
                             {value3} is their credentials. 
                             {value4} is their reference '''.format(value = username, value1 = realname, value2 = email,
                             value3 = credentials, value4 = reference))
+                            createPotentialUser(username,realname,email,credentials,reference)
+                            registerPotentialUser(username)
                         else:
                             print("Reference does not exist")
                     else:
@@ -63,6 +78,7 @@ class Register(Screen):
                 print("Username already exists")
         else:
             print("A username must be alphanumeric only")
+
 class GroupPage(Screen):
     pass
 class Projects(Screen):

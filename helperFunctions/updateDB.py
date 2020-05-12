@@ -6,9 +6,9 @@ import string
 from firebase_admin import credentials
 from firebase_admin import firestore
 
-from registrationStuff import userExists, passwordValid
-from passhashingmod import hash
-from emailsender import sendMail
+from helperFunctions.registrationStuff import passwordValid
+from helperFunctions.passhashingmod import hash
+from helperFunctions.emailsender import sendMail
 
 
 cred = credentials.Certificate("serviceAccountKey.json")
@@ -39,9 +39,9 @@ def registerPotentialUser(user):
         randStr = randStr + random.choice(letters) #iterativly append random ascii chars to a string
     #####
     hashedPass = hash(randStr)
-    db.collection(u'User').document(user).set({'name' : info['realname'], 'email' : info['email'], 'cred' : info['cred'], 'ref' : info['ref'], 'key' : hashedPass['key'], 'salt': hashedPass['salt']})
-    sendMail(info['email'],"Congrats on getting registered","Your temporary password is {pass} please login to change it.".format(pass=randStr))
-    info.delete()
+    db.collection(u'User').document(user).set({'name' : info['name'], 'email' : info['email'], 'cred' : info['cred'], 'ref' : info['ref'], 'key' : hashedPass['key'], 'salt': hashedPass['salt']})
+    sendMail(info['email'],"Congrats on getting registered","Your temporary password is {passw} please login to change it.".format(passw = randStr))
+    db.collection(u'PendingUser').document(user).delete()
 
 def getUserDocument(user):
     return db.collection(u'User').document(user).get().to_dict()
@@ -112,3 +112,6 @@ def update_compliments(user):
 def disbandGroup(groupName):
     getProjectDocument(groupName).delete()
     #destruction of GUI stuff
+
+def userExists(user):
+    return db.collection(u'User').document(user).get().exists
