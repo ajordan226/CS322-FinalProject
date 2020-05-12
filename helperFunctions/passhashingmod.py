@@ -10,8 +10,6 @@ for details
 import os, import binascii
 from backports.pbkdf2 import pbkdf2_hmac
 
-
-
 #Creates a key and salt for safe storage in a database
 def hash(password):
     salt = os.urandom(8)
