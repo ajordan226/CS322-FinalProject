@@ -3,9 +3,6 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 
-cred = credentials.Certificate("serviceAccountKey.json")
-firebase_admin.initialize_app(cred)
-db = firestore.client()
 
 
 #Predicate which returns true if a password is at least 6 characters long, mixed case, and has a number
@@ -21,8 +18,6 @@ def emailValid(email):
     return True if (re.match(r'\S+@\S+')) else False
 
 #Predicate which returns true if the referredUser exists
-def userExists(user):
-    return db.collection(u'User').document(user).get().exists
 
 #Verifies each field of the registration page before sending to the superuser for examination
 
