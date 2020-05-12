@@ -1,29 +1,72 @@
 import re
 import firebase_admin
+import random
+import string
+
 from firebase_admin import credentials
 from firebase_admin import firestore
 
-from registrationStuff import userExists
+from registrationStuff import userExists, passwordValid
+from passhashingmod import hash
+from emailsender import sendMail
 
 
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+#Verifies a login attempt into a registered account
+def verifyLogin(user,password):
+    if userExists(user):
+        userDocument = getUserDocument(user)
+        attemptedKey = pbkdf2_hmac("sha256",password,userDocument['salt'],80000,32)
+        success = attemptedKey == userDocument['key']
+        if (not success):
+            print("Incorrect password")
+        return success
+    else:
+        print("An account with that user name does not exist")
+        return False
+
+def createPotentialUser(user, realname, email, credentials, reference):
+    db.collection(u'PendingUser').document(user).set({'name' : realname, 'email' : email, 'cred' : credentials, 'ref' : reference, 'tries' : 0})
+
+def registerPotentialUser(user):
+    info = db.collection(u'PendingUser').document(user).get().to_dict()
+    letters = string.ascii_lowercase #gets set of lowercase ascii characters
+    randStr = ""
+    for i in range(8):
+        randStr = randStr + random.choice(letters) #iterativly append random ascii chars to a string
+    #####
+    hashedPass = hash(randStr)
+    db.collection(u'User').document(user).set({'name' : info['realname'], 'email' : info['email'], 'cred' : info['cred'], 'ref' : info['ref'], 'key' : hashedPass['key'], 'salt': hashedPass['salt']})
+    sendMail(info['email'],"Congrats on getting registered","Your temporary password is {pass} please login to change it.".format(pass=randStr))
+    info.delete()
+
 def getUserDocument(user):
-    return db.collection(u'User').document(user.encode("utf-8")).get().to_dict()
+    return db.collection(u'User').document(user).get().to_dict()
 
 def getProjectDocument(groupName):
-    return db.collection(u'Project').document(groupName.encode("utf-8")).get().to_dict()
+    return db.collection(u'Project').document(groupName).get().to_dict()
+
+def changePass(user,newPass):
+    userDocument = getUserDocument(user)
+    if passwordValid(newPass):
+        newPassHash = hash(newPass)
+        userDocument.update({'key' : newPassHash['key']})
+        userDocument.update({'salt' : newPassHash['salt']})
+        return True
+    else:
+        return False
 
 def isBlacklisted(user):
-    return db.collection(u'Blacklist').document(user.encode("utf-8")).get().exists
+    return db.collection(u'Blacklist').document(user).get().exists
 
 def appendToListAttrib(user,attrib,value):
     userDocument = getUserDocument(user)
     if value not in userDocument[attrib]:
         newAttribList = userDocument[attrib].append(value)
-        userDocument.update({attrib.encode("utf-8") : newAttribList})
+        userDocument.update({attrib : newAttribList})
 
 def removeUserFromGroup(userToRemove,groupName):
     groupProjectDoc = getProjectDocument(groupName)
@@ -35,10 +78,9 @@ def isMember(user,groupName):
     groupProjectDoc = getProjectDocument(groupName)
     return user in groupProjectDoc['members']
 
-
 def banUser(userToRemove):
     userDocument = getUserDocument(userToRemove)
-    db.collection(u'Blacklist').document(userToRemove.encode("utf-8")).set({u'email' : userDocument['email'], u'realname' : userDocument['realname']})
+    db.collection(u'Blacklist').document(userToRemove).set({u'email' : userDocument['email'], u'realname' : userDocument['realname']})
     userDocument.delete()
 
 def update_rep(user, reputation):

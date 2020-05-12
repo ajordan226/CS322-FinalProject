@@ -7,19 +7,9 @@ method is resistant to dictionary and rainbow table attacks.
 See https://cryptobook.nakov.com/mac-and-key-derivation/pbkdf2
 for details
 """
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-
 import os, import binascii
 from backports.pbkdf2 import pbkdf2_hmac
 
-from .registrationStuff import userExists
-from updateDB import getUserDocument
-
-cred = credentials.Certificate("../UserClasses/serviceAccountKey.json")
-firebase_admin.initialize_app(cred)
-db = firestore.client()
 
 
 #Creates a key and salt for safe storage in a database
@@ -27,16 +17,3 @@ def hash(password):
     salt = os.urandom(8)
     key = pbkdf2_hmac("sha256",password.encode("utf-8"),salt,80000,32)
     return {"key": key, "salt": salt}
-
-#Verifies a login attempt into a registered account
-def verifyLogin(user,password):
-    if userExists(user):
-        userDocument = getUserDocument(user)
-        attemptedKey = pbkdf2_hmac("sha256",password.encode("utf-8"),userDocument['salt'],80000,32)
-        success = attemptedKey == userDocument['key']
-        if (not success):
-            print("Incorrect password")
-        return success
-    else:
-        print("An account with that user name does not exist")
-        return False
