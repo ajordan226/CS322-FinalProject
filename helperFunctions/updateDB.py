@@ -43,21 +43,29 @@ def registerPotentialUser(user):
     sendMail(info['email'],"Congrats on getting registered","Your temporary password is {passw} please login to change it.".format(passw = randStr))
     db.collection(u'PendingUser').document(user).delete()
 
+def createGroup(user,groupName):
+    db.collection(u'Project').document(groupName).set({'members' : [user]})
+    db.collection(u'Project').document(groupName).document('forum').set({'count' = 0})
+
 def getUserDocument(user):
     return db.collection(u'User').document(user).get().to_dict()
 
 def getProjectDocument(groupName):
     return db.collection(u'Project').document(groupName).get().to_dict()
 
-def changePass(user,newPass):
+def changePass(user,newPass, newPassConfirm):
     userDocument = getUserDocument(user)
-    if passwordValid(newPass):
+    if not passwordValid(newPass):
+        print("Password must be mixed case at least 6 characters, be mixed case, and have a number")
+        return False
+    elif newPass != newPassConfirm:
+        print("Passwords do not match")
+        return False
+    else:
         newPassHash = hash(newPass)
         userDocument.update({'key' : newPassHash['key']})
         userDocument.update({'salt' : newPassHash['salt']})
         return True
-    else:
-        return False
 
 def isBlacklisted(user):
     return db.collection(u'Blacklist').document(user).get().exists
@@ -115,3 +123,22 @@ def disbandGroup(groupName):
 
 def userExists(user):
     return db.collection(u'User').document(user).get().exists
+
+bad_words = ["poop","butt","pee","github","bitbucket","gitlab"]
+
+def addMessage(user, groupName, message):
+    forumPosts = db.collection(groupName).document('forum').get().to_dict()
+    newCount = forumPosts['count'] + 1
+    msgList = message.split
+    for i in range(len(msgList)):
+        if msgList[i] in bad_words:
+            msgList[i] = "FeelsBad"
+    forumPosts['post' + newCount] = [user," ".join(msgList)]
+
+def getMessages(groupName):
+    forumPosts = db.collection(groupName).document('forum').get().to_dict()
+    count = forumPosts['count']
+    postList = []
+    for i in range(1,count+1):
+        postList.append(forumPosts['post'+i])
+    return forumPosts
