@@ -163,6 +163,10 @@ def addMessage(user, groupName, message):
             msgList[i] = "FeelsBad"
     db.collection(u'Project').document(groupName).collection('forum').document().set({'msg' : [user," ".join(msgList)], 'msgNumber' : newCount})
 
+def getGroupDescription(groupName):
+    groupDoc = getProjectDocument(groupName)
+    return groupDoc['description']
+
 #[[usr1,msg1],[us]]
 """
 def getMessages(groupName):

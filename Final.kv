@@ -238,6 +238,12 @@ MyLayout:
             id: groupPageName
             font_size: '35dp'
             pos_hint:{'y':.4}
+        Label:
+            id: groupDescription
+            text: 'testtestestestestestestestesttesttestestestestestestestesttesttestestestestestestestesttesttestestestestestestestest'
+            text_size:self.size
+            font_size: '25dp'
+            pos_hint:{'x':0,'y':.7}
         GridLayout:
             rows:3
             cols:2
@@ -256,12 +262,11 @@ MyLayout:
                 on_press:
                     root.manager.current = 'UserList'
             Button:
+                text: 'Poll'
+            Button:
                 text: 'Back'
                 on_release:
                     root.manager.current = 'Projects'
-            Button:
-                text: 'Poll'
-
 
 
 <Projects>:
