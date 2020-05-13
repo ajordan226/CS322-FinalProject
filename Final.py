@@ -42,7 +42,7 @@ class MessageBoard(Screen):
 
     def populateMessages(self):
         self.data_messages.clear()
-
+    
         docs = db.collection(u'Project').document(MyApp.currentGroup).collection("forum").order_by('msgNumber').stream()
         for doc in docs:
             temp = doc.to_dict()
@@ -147,7 +147,10 @@ class Register(Screen):
             p.open()
 
 class GroupPage(Screen):
-    pass
+    groupName = StringProperty('')
+
+    def groupNameUpdate(self,instance,name):
+        self.ids.groupPageName.text = MyApp.currentGroup
 
 class Moderation(Screen):
     pass
@@ -185,7 +188,7 @@ class newEntry(Screen):
     project_info = ObjectProperty(None)
 
     def submit(self):
-        createGroup(MyApp.loggedUser,self.project_name.text,self.project_info.text)
+        createGroup(MyApp.loggedUser,self.project_name.text)
 
 
     def switch_screenback(self,*args):
