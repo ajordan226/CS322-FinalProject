@@ -201,18 +201,18 @@ MyLayout:
                     height: self.minimum_height
                     orientation: 'vertical'
                     multiselect: False
-                    
 <UserList>:
+    
     RelativeLayout:
         Label:
             id: 'currentGroup'
             font_size:'44dp'
         Button:
-            text: 'Create New Project'
+            text: 'Back'
             pos_hint: {'x':.25,'y':.05}
             size_hint:(.5,.1)
             on_release:
-                root.manager.current = 'newEntry'
+                root.manager.current = 'GroupPage'
         RelativeLayout:
             size_hint:(1,.75)
             pos_hint: {'x':.10,'y':.2}
@@ -222,13 +222,14 @@ MyLayout:
                 data: [{'text': str(x)} for x in root.data_users]
                 SelectableRecycleGridLayout:
                     id: rv
-                    cols: 4
+                    cols: 1
                     default_size: None, dp(45)
                     default_size_hint: .9, None
                     size_hint_y: None
                     height: self.minimum_height
                     orientation: 'vertical'
-                    multiselect: False                   
+                    multiselect: False
+
 <newEntry>:
     project_name:projectName
     project_info:projectInfo
