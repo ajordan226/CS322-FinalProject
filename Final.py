@@ -23,8 +23,7 @@ from backports.pbkdf2 import pbkdf2_hmac
 from helperFunctions.registrationStuff import *
 from helperFunctions.emailsender import sendMail
 from helperFunctions.updateDB import *
-from groupManager.groupInvite import *
-from groupManager.groupModeration import *
+
 
 
 Window.size = (1024,768)
