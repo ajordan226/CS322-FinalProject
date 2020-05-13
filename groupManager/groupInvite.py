@@ -5,9 +5,9 @@ import string
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'helperFunctions'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
 import emailsender
-import updateDB
+#import updateDB
 
-
+"""
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
@@ -15,7 +15,7 @@ from firebase_admin import firestore
 cred = credentials.Certificate("../UserClasses/serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
-
+"""
 def inviteUser(sender, receiver, groupName):
     if updateDB.userExists(receiver):
         userDocument = updateDB.getUserDocument(receiver)
