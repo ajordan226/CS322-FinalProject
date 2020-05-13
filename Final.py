@@ -61,7 +61,7 @@ class Login(Screen):
                 print('success')
                 MyApp.loggedUser = user
                 print(MyApp.loggedUser)
-        else: 
+        else:
             p.ids.textLabel.text = "No account with that username!"
             p.open()
             print("An account with that user name does not exist")
@@ -84,12 +84,12 @@ class Register(Screen):
                 if (realname.strip()):
                     if (credentials.strip()):
                         if (userExists(reference)):
-                            sendMail('pamjje40@gmail.com', 'Registration document', 
-                            '''Hello Super User. 
-                            {value} is their username. 
-                            {value1} is their realname. 
-                            {value2} is their email. 
-                            {value3} is their credentials. 
+                            sendMail('pamjje40@gmail.com', 'Registration document',
+                            '''Hello Super User.
+                            {value} is their username.
+                            {value1} is their realname.
+                            {value2} is their email.
+                            {value3} is their credentials.
                             {value4} is their reference '''.format(value = username, value1 = realname, value2 = email,
                             value3 = credentials, value4 = reference))
                             createPotentialUser(username,realname,email,credentials,reference)
@@ -122,9 +122,9 @@ class Moderation(Screen):
 class MessageBoard(Screen):
     pass
 class Projects(Screen):
-    
+
     data_projects = ListProperty([])
-    
+
     def __init__(self,**kwargs):
         super(Projects,self).__init__(**kwargs)
         self.getProjects()
@@ -147,10 +147,10 @@ class MyLayout(FloatLayout):
         self.scr_mngr.current = screen
 
 class newEntry(Screen):
-    
+
     project_name = ObjectProperty(None)
     project_info = ObjectProperty(None)
-    
+
     def submit(self):
 
         data = {
@@ -158,12 +158,12 @@ class newEntry(Screen):
             u'name': self.project_name.text
         }
         db.collection(u'Project').document().set(data)
-        
+
 
     def switch_screenback(self,*args):
         app = App.get_running_app()
         app.root.scr_mngr.current = "Projects"
-        
+
 
     def clocked_switch(self):
         Clock.schedule_once(self.switch_screenback,.0)
@@ -178,6 +178,7 @@ class SelectableButton(Button):
 class MyApp(App):
     
     loggedUser = ''
+
     currentGroup = ''
     
     def build(self):
