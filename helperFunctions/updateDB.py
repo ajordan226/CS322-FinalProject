@@ -39,13 +39,13 @@ def registerPotentialUser(user):
         randStr = randStr + random.choice(letters) #iterativly append random ascii chars to a string
     #####
     hashedPass = hash(randStr)
-    db.collection(u'User').document(user).set({'name' : info['name'], 'email' : info['email'], 'cred' : info['cred'], 'ref' : info['ref'], 'reputation' : 0, 'key' : hashedPass['key'], 'salt': hashedPass['salt'], 'whitelist' : [], 'blacklist' : [], 'VIP' : False})
+    db.collection(u'User').document(user).set({'name' : info['name'], 'email' : info['email'], 'cred' : info['cred'], 'ref' : info['ref'], 'reputation' : 0, 'key' : hashedPass['key'], 'salt': hashedPass['salt'], 'whitelist' : [], 'blacklist' : [], 'VIP' : False,'BadWordsUsed' : []})
     sendMail(info['email'],"Congrats on getting registered","Your temporary password is {passw} please login to change it.".format(passw = randStr))
     db.collection(u'PendingUser').document(user).delete()
 
 def createGroup(user,groupName, description):
     db.collection(u'Project').document(groupName).set({'members' : [user], 'name' : groupName, 'description' : description})
-    db.collection(u'Project').document(groupName).collection('forum').set()
+    db.collection(u'Project').document(groupName).collection('forum')
     db.collection(u'Project').document(groupName).collection('forumC').document('forumCount').set({'count' : 0})
     db.collection(u'Project').document(groupName).collection('polls').document('votekickpoll').set({})
     db.collection(u'Project').document(groupName).collection('polls').document('warningpoll').set({})
@@ -77,7 +77,7 @@ def getProjectDocument(groupName):
     return db.collection(u'Project').document(groupName).get().to_dict()
 
 def getPollDocument(groupName, voteType):
-    return db.collecion(u'Project').document(groupName).document(voteType+'poll')
+    return db.collecion(u'Project').document(groupName).collection('polls').document(voteType).get().to_dict()
 
 def changePass(user,newPass, newPassConfirm):
     userDocument = getUserDocument(user)
@@ -119,13 +119,15 @@ def getMembers(groupName):
 
 def banUser(userToRemove):
     userDocument = getUserDocument(userToRemove)
-    db.collection(u'Blacklist').document(userToRemove).set({u'email' : userDocument['email'], u'realname' : userDocument['realname']})
-    userDocument.delete()
+    db.collection(u'Blacklist').document(userToRemove).set({u'email' : userDocument['email'], u'name' : userDocument['name']})
+    #db.collection(u'User').document(userToRemove).delete()
 
 def update_rep(user, reputation):
     if userExists(user):
         info = getUserDocument(user)
         db.collection(u'User').document(user).update({'reputation' : info['reputation'] + reputation})
+        if info['reputation'] + reputation < 0:
+            banUser(user)
 
 def update_warnings(user, groupName):
     if userExists(user):
@@ -164,10 +166,19 @@ def addMessage(user, groupName, message):
     newCount = db.collection(u'Project').document(groupName).collection('forumC').document('forumCount').get().to_dict()['count'] + 1
     db.collection(u'Project').document(groupName).collection('forumC').document('forumCount').update({'count' : newCount})
     msgList = message.split()
+    count=0
+    userDocument = getUserDocument(user)
+    badWordsUsed = userDocument['BadWordsUsed']
     for i in range(len(msgList)):
-        if msgList[i] in bad_words:
+        if msgList[i] in badWordsUsed:
+            count += 5
+            msgList[i] = "FeelsBad"
+        elif msgList[i] in bad_words:
+            count+=1
+            appendToListAttrib(user,"BadWordsUsed",msgList[i])
             msgList[i] = "FeelsBad"
     db.collection(u'Project').document(groupName).collection('forum').document().set({'msg' : [user," ".join(msgList)], 'msgNumber' : newCount})
+    update_rep(user,-count)
 
 def getGroupDescription(groupName):
     groupDoc = getProjectDocument(groupName)
@@ -189,7 +200,8 @@ def inviteUser(sender, receiver, groupName):
         userDocument = getUserDocument(receiver)
         if sender in userDocument['whitelist']:
             groupProjectDoc = getProjectDocument(groupName)
-            newMemberList = groupProjectDoc["members"].append(receiver)
+            newMemberList = groupProjectDoc["members"]
+            newMemberList.append(receiver)
             db.collection(u'Project').document(groupName).update({u'members' : newMemberList})
             sendMail(userDocument['email'],"Invite to " + groupName, "Hello you have recieved an invite to " + groupName + ". This was a whitelisted user so you have immediete access")
 
@@ -268,7 +280,7 @@ def checkPoll(groupName, voteType ,unanimous):
 def vote(user, userVote, groupName, voteType, unanimous):
     pollDoc = getPollDocument(groupName, voteType)
     if pollDoc.has_key(user) and pollDoc[user] is None:
-        pollDoc.update({user : userVote})
+        db.collection(u'Project').document(groupName).collection('polls').document(voteType).update({user : userVote})
         if full(groupName, voteType):
             if checkPoll(groupName, voteType, unanimous):
                 winner = getWinners(groupName, voteType)[0]

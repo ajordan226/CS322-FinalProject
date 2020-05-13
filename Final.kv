@@ -62,6 +62,41 @@ MyLayout:
                 name: 'InviteManager'
             PollScreen:
                 name: 'PollScreen'
+            VoteScreen:
+                name: 'VoteScreen'
+<VoteScreen>:
+    RelativeLayout:
+        TextInput:
+            text:'sucks'
+            pos_hint:{'x':.05,'y':.25}
+            size_hint:(.9,.2)
+        Button:
+            text: 'Post'
+            pos_hint: {'x':.5,'y':.05}
+            size_hint:(.33,.1)
+            on_release:
+                root.post()
+        Button:
+            text: 'Back'
+            pos_hint:{'x':.15,'y':.05}
+            size_hint:(.33,.1)
+            on_release:
+                root.manager.current = "GroupPage"
+        RelativeLayout:
+            size_hint:(1,.5)
+            pos_hint: {'x':.10,'y':.5}
+            RecycleView:
+                viewclass: 'messageBoardLabel'
+                size_hint:(.8,.9)
+                data: [{'text': str(x).strip("[]").replace(","," :").replace("'","")} for x in root.data_voteinfo]
+                SelectableRecycleGridLayout:
+                    cols: 1
+                    default_size: None, dp(45)
+                    default_size_hint: .9, None
+                    size_hint_y: None
+                    height: self.minimum_height
+                    orientation: 'vertical'
+                    multiselect: False            
 <PollScreen>:
     RelativeLayout:
         Button:
