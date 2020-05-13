@@ -314,6 +314,42 @@ MyLayout:
                     height: self.minimum_height
                     orientation: 'vertical'
                     multiselect: False
+<GroupUserPage>:
+    FloatLayout:
+        Label:
+            pos_hint:{'x':-.15,'y': .4}
+            font_size: '30dp'
+            text: "Reputation Score :"
+        Button:
+            text: "Vote Kick"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.29,'y':.4}
+            on_release: pass
+        Button:
+            text: "Warning"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.29,'y':.3}
+            on_release: pass
+        Button:
+            text: "Compliment"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.29,'y':.2}
+            on_release: pass
+        Button:
+            text: "Complain"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.29,'y':.1}
+            on_release: pass
+        Button:
+            text: "Back"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.29,'y':0}
+            on_release: root.manager.current = "UserList"
 
 <newEntry>:
     project_name:projectName

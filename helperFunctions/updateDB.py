@@ -39,7 +39,7 @@ def registerPotentialUser(user):
         randStr = randStr + random.choice(letters) #iterativly append random ascii chars to a string
     #####
     hashedPass = hash(randStr)
-    db.collection(u'User').document(user).set({'name' : info['name'], 'email' : info['email'], 'cred' : info['cred'], 'ref' : info['ref'], 'key' : hashedPass['key'], 'salt': hashedPass['salt']})
+    db.collection(u'User').document(user).set({'name' : info['name'], 'email' : info['email'], 'cred' : info['cred'], 'ref' : info['ref'], 'reputation' : 0, 'key' : hashedPass['key'], 'salt': hashedPass['salt']})
     sendMail(info['email'],"Congrats on getting registered","Your temporary password is {passw} please login to change it.".format(passw = randStr))
     db.collection(u'PendingUser').document(user).delete()
 
@@ -119,7 +119,7 @@ def banUser(userToRemove):
 def update_rep(user, reputation):
     if userExists(user):
         info = getUserDocument(user)
-        info['reputation']+=reputation
+        db.collection(u'User').document(user).update({'reputation' : info['reputation'] + reputation})
 
 def update_warnings(user, groupName):
     if userExists(user):

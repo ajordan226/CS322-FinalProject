@@ -42,7 +42,7 @@ class MessageBoard(Screen):
 
     def populateMessages(self):
         self.data_messages.clear()
-    
+
         docs = db.collection(u'Project').document(MyApp.currentGroup).collection("forum").order_by('msgNumber').stream()
         for doc in docs:
             temp = doc.to_dict()
@@ -200,7 +200,7 @@ class newEntry(Screen):
     project_info = ObjectProperty(None)
 
     def submit(self):
-        createGroup(MyApp.loggedUser,self.project_name.text)
+        createGroup(MyApp.loggedUser,self.project_name.text,self.project_info.text)
 
 
     def switch_screenback(self,*args):
@@ -215,9 +215,9 @@ class SelectableButton(Button):
     def on_release(self):
         app = App.get_running_app()
         app.root.scr_mngr.current = "GroupPage"
-
+    
     def on_press(self):
-        MyApp.currentGroup = self.text
+        MyApp.currenGroup = self.text
         print(MyApp.currentGroup)
 
 
