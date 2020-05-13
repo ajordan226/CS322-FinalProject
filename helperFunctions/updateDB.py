@@ -81,7 +81,7 @@ def changePass(user,newPass, newPassConfirm):
         return False
     elif newPass != newPassConfirm:
         print("Passwords do not match")
-        return False
+        return False   
     else:
         newPassHash = hash(newPass)
         userDocument.update({'key' : newPassHash['key']})
@@ -95,7 +95,7 @@ def appendToListAttrib(user,attrib,value):
     userDocument = getUserDocument(user)
     if value not in userDocument[attrib]:
         newAttribList = userDocument[attrib]
-        newAttribList.append(value) 
+        newAttribList.append(value)
         db.collection(u'User').document(user).update({attrib : newAttribList})
 
 def removeUserFromGroup(userToRemove,groupName):
