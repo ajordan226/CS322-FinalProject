@@ -30,32 +30,35 @@ Window.size = (1024,768)
 
 class MessageBoard(Screen):
     data_messages = ListProperty([])
-    
+
     def __init__(self,**kwargs):
         super(MessageBoard,self).__init__(**kwargs)
         self.populateMessages()
-    
+
     def on_enter(self):
         self.populateMessages()
-    
+
     def populateMessages(self):
         self.data_messages.clear()
         messages = getMessages(MyApp.currentGroup)
-        for i in messages:
-            self.data_messages.append(i)
+        docs = db.collection(u'Project').document(groupName).collection("forum").order_by('msgNumber').stream()
+        for doc in docs:
+            temp = doc.to_dict()
+            self.data_messages.append(temp['msg'])
+
 
 class UserList(Screen):
-     
+
     data_users = ListProperty([])
-    
+
     def __init__(self,**kwargs):
         super(UserList,self).__init__(**kwargs)
         self.getUsers()
-        
+
 
     def on_enter(self):
         self.getUsers()
-    
+
     def getUsers(self):
         self.data_users.clear()
         members = getMembers(MyApp.currentGroup)
@@ -201,11 +204,11 @@ class messageBoardLabel(Label):
     pass
 
 class MyApp(App):
-    
+
     loggedUser = ''
     currentGroup = 'grouptest'
 
-    
+
     def build(self):
         return Builder.load_file('Final.kv')
 
