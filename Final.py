@@ -23,6 +23,8 @@ from backports.pbkdf2 import pbkdf2_hmac
 from helperFunctions.registrationStuff import *
 from helperFunctions.emailsender import sendMail
 from helperFunctions.updateDB import *
+from groupManager.groupInvite import *
+from groupManager.groupModeration import *
 
 
 Window.size = (1024,768)
@@ -61,8 +63,21 @@ class InviteManager(Screen):
         addBlackList(MyApp.loggedUser, self.ids.addToBlackbox.text)
 
 
+    def acceptInv(self):
+        acceptInvite(MyApp.loggedUser, MyApp.currentGroup, self.ids.acceptInvite.text)
+
+    def invUser(self):
+        if isMember(MyApp.loggedUser, MyApp.currentGroup):
+            inviteUser(MyApp.loggedUser, self.ids.inviteUser.text, MyApp.currentGroup)
+
+    def addWhite(self):
+        addWhiteList(MyApp.loggedUser, self.ids.addToWhitebox.text)
+
+    def addBlack(self):
+        addBlackList(MyApp.loggedUser, self.ids.addToBlackbox.text)
+
 class GroupUserPage(Screen):
-    
+
     def on_enter(self):
         self.ids.Reputation.text = "Reputation Score: " + str(MyApp.currentRep)
 
@@ -193,7 +208,7 @@ class Register(Screen):
             p.open()
 
 class GroupPage(Screen):
-    
+
     def on_enter(self):
         self.ids.groupPageName.text = MyApp.currentGroup
         self.ids.groupDescription.text = getGroupDescription(MyApp.currentGroup)
@@ -262,7 +277,7 @@ class SelectableButton(Button):
     def on_release(self):
         app = App.get_running_app()
         app.root.scr_mngr.current = "GroupPage"
-    
+
     def on_press(self):
         MyApp.currentGroup = self.text
         print(MyApp.currentGroup)
@@ -282,7 +297,7 @@ class userSelectableButton(Button):
         MyApp.groupUserPage = self.text
         print(MyApp.groupUserPage)
         app.root.scr_mngr.current = "GroupUserPage"
-    
+
     def on_press(self):
         user = self.text
         userDoc = getUserDocument(user)
