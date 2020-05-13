@@ -182,12 +182,7 @@ class newEntry(Screen):
 
     def submit(self):
         createGroup(MyApp.loggedUser,self.project_name.text)
-        '''data = {
-            u'info': self.project_info.text,
-            u'name': self.project_name.text
-        }
 
-        db.collection(u'Project').document(self.project_name.text).set(data)'''
 
     def switch_screenback(self,*args):
         app = App.get_running_app()
@@ -204,6 +199,12 @@ class SelectableButton(Button):
         MyApp.currentGroup = self.text
         print(MyApp.currentGroup)
         app.root.scr_mngr.current = "GroupPage"
+
+class userSelectableButton(Button):
+    pass
+    '''def on_release(self):
+        app = App.get_running'''
+
 
 class messageBoardLabel(Label):
     pass
