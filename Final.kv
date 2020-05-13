@@ -49,6 +49,11 @@ MyLayout:
                 name: 'MessageBoard'
             UserList:
                 name: 'UserList'
+            GroupUserPage:
+                name: 'GroupUserPage'
+<GroupUserPage>:
+    Label:
+        text: 'groupuserpage'
 
 <MessageBoard>:
     RelativeLayout:
@@ -187,7 +192,10 @@ MyLayout:
     pos_hint: {'x':.125,'y':0.0125}
     size_hint: .75,1
     FloatLayout:
-
+        Label:
+            id: groupPageName
+            font_size: '35dp'
+            pos_hint:{'y':.4}
         GridLayout:
             rows:2
             cols:2
@@ -254,7 +262,7 @@ MyLayout:
             size_hint:(1,.75)
             pos_hint: {'x':.10,'y':.2}
             RecycleView:
-                viewclass: 'SelectableButton'
+                viewclass: 'userSelectableButton'
                 size_hint:(.8,.9)
                 data: [{'text': str(x)} for x in root.data_users]
                 SelectableRecycleGridLayout:
@@ -300,7 +308,7 @@ MyLayout:
                 size_hint: .5,.1
                 on_release:
                     root.manager.current = 'Projects'
-                    #root.dismiss()
+
             Button:
                 text: 'Submit'
                 size_hint: .5,.1
