@@ -23,7 +23,6 @@ def inviteUser(sender, receiver, groupName):
         newMemberList = groupProjectDoc["members"].append(receiver)
         groupProjectDoc.update({u'members' : newMemberList})
         emailsender.sendMail(userDocument['email'],"Invite to " + groupName, "Hello you have recieved an invite to " + groupName + ". This was a whitelisted user so you have immediete access")
-        userDocument.update({ (groupName+"InviteCode") : randStr})
 
     #### Initializes random string as invite passcode
     elif not sender in userDocument['blacklist']:
@@ -35,7 +34,7 @@ def inviteUser(sender, receiver, groupName):
         emailsender.sendMail(userDocument['email'],"Invite to " + groupName, "Hello you have recieved an invite to " + groupName +". Enter the following code to enter: " + randStr)
         userDocument.update({ (groupName+"InviteCode") : randStr})
     else:
-        pass
+        print("You are in this users blacklist D:")
 
 def acceptInvite(user, groupName, inviteCode):
     userDocument = updateDB.getUserDocument(user)
