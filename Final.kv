@@ -22,6 +22,11 @@ MyLayout:
             text:'Projects?'
             on_press:
                 root.change_screen("Projects")
+        Button:
+            size_hint: .25,.25
+            text:'moderation'
+            on_press:
+                root.change_screen("Moderation")
 
     RelativeLayout:
         size_hint:.75,1
@@ -38,6 +43,29 @@ MyLayout:
                 name: 'newEntry'
             GroupPage:
                 name: 'GroupPage'
+            Moderation:
+                name: 'Moderation'
+            MessageBoard:
+                name: 'MessageBoard'
+<SuccessPopup>:
+    auto_dismiss: True
+    title: ""
+    separator_height: 0
+    pos_hint: {'x':.275,'y':.25}
+    size_hint: .7,.5
+    FloatLayout:
+        Label:
+            id: textLabel
+            pos_hint:{'x':.0,'y':.2}
+            text: "Success!"
+            font_size: "40dp"
+        Button:
+            pos_hint:{'x':0,'y':0}
+            size_hint: 1,.25
+            text: "Close"
+            on_release:
+                root.dismiss()
+
 <Register>:
     FloatLayout:
         Label:
