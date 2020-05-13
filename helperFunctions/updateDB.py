@@ -44,8 +44,8 @@ def registerPotentialUser(user):
     db.collection(u'PendingUser').document(user).delete()
 
 def createGroup(user,groupName):
-    db.collection(u'Project').document(groupName).set({'members' : [user]})
-    db.collection(u'Project').document(groupName).document('forum').set({'count' : 0})
+    db.collection(u'Project').document(groupName).set({'members' : [user], 'name' : groupName})
+    #db.collection(u'Project').document(groupName).document('forum').set({'count' : 0})
 
 def startGroupPoll(groupName,voteType,excludedVoter = ""):
     pollReference = db.collection(u'Project').document(groupName).document(voteType + "poll")
