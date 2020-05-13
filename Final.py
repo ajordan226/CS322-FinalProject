@@ -7,6 +7,7 @@ from kivy.lang import Builder
 from kivy.core.window import Window
 from firebase_admin import credentials
 from kivy.uix.screenmanager import Screen,ScreenManager
+from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import ObjectProperty
@@ -25,6 +26,24 @@ from helperFunctions.updateDB import *
 
 
 Window.size = (1024,768)
+
+
+class MessageBoard(Screen):
+    data_messages = ListProperty([])
+    
+    def __init__(self,**kwargs):
+        super(MessageBoard,self).__init__(**kwargs)
+        self.populateMessages()
+    
+    def on_enter(self):
+        self.populateMessages()
+    
+    def populateMessages(self):
+        self.data_messages.clear()
+        messages = getMessages(MyApp.currentGroup)
+        for i in messages:
+            self.data_messages.append(i)
+
 class UserList(Screen):
      
     data_users = ListProperty([])
@@ -122,8 +141,7 @@ class GroupPage(Screen):
     pass
 class Moderation(Screen):
     pass
-class MessageBoard(Screen):
-    pass
+
 class Projects(Screen):
 
     data_projects = ListProperty([])
@@ -178,6 +196,9 @@ class SelectableButton(Button):
         MyApp.currentGroup = self.text
         print(MyApp.currentGroup)
         app.root.scr_mngr.current = "GroupPage"
+
+class messageBoardLabel(Label):
+    pass
 
 class MyApp(App):
     
