@@ -58,6 +58,7 @@ class MessageBoard(Screen):
 
     def __init__(self,**kwargs):
         super(MessageBoard,self).__init__(**kwargs)
+        self.data_messages.clear()
         self.populateMessages()
 
     def on_enter(self):
@@ -173,6 +174,8 @@ class GroupPage(Screen):
 
     def on_enter(self):
         self.ids.groupPageName.text = MyApp.currentGroup
+        self.ids.groupDescription.text = getGroupDescription(MyApp.currentGroup)
+
 
 class Moderation(Screen):
     pass
