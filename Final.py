@@ -26,8 +26,16 @@ from helperFunctions.updateDB import *
 
 
 Window.size = (1024,768)
+
+class InviteManager(Screen):
+    def __init__(self,**kwargs):
+        super(InviteManager,self).__init__(**kwargs)
+
 class GroupUserPage(Screen):
-    pass
+    
+    def on_enter(self):
+        self.ids.Reputation.text = "Reputation Score: " + str(MyApp.currentRep)
+
 
 class MessageBoard(Screen):
     data_messages = ListProperty([])
@@ -217,7 +225,7 @@ class SelectableButton(Button):
         app.root.scr_mngr.current = "GroupPage"
     
     def on_press(self):
-        MyApp.currenGroup = self.text
+        MyApp.currentGroup = self.text
         print(MyApp.currentGroup)
 
 
@@ -228,7 +236,12 @@ class userSelectableButton(Button):
         MyApp.groupUserPage = self.text
         print(MyApp.groupUserPage)
         app.root.scr_mngr.current = "GroupUserPage"
-
+    
+    def on_press(self):
+        user = self.text
+        userDoc = getUserDocument(user)
+        MyApp.currentRep = userDoc['reputation']
+        print(MyApp.currentGroup)
 
 class messageBoardLabel(Label):
     pass
@@ -238,6 +251,7 @@ class MyApp(App):
     loggedUser = ''
     currentGroup = 'grouptest'
     groupUserPage = ''
+    currentRep = 0
 
 
     def build(self):

@@ -58,6 +58,8 @@ MyLayout:
                 name: 'GroupUserPage'
             ChangePassword:
                 name: 'ChangePassword'
+            InviteManager:
+                name: 'InviteManager'
 
 <ChangePassword>:
     FloatLayout:
@@ -237,10 +239,14 @@ MyLayout:
             font_size: '35dp'
             pos_hint:{'y':.4}
         GridLayout:
-            rows:2
+            rows:3
             cols:2
             size_hint:None,None
             size: root.width,root.height/4
+            Button:
+                text: 'InviteManager'
+                on_release:
+                    root.manager.current = 'InviteManager'
             Button:
                 text: 'MessageBoard'
                 on_release:
@@ -317,9 +323,9 @@ MyLayout:
 <GroupUserPage>:
     FloatLayout:
         Label:
+            id : Reputation
             pos_hint:{'x':-.15,'y': .4}
             font_size: '30dp'
-            text: "Reputation Score :"
         Button:
             text: "Vote Kick"
             font_size: '30dp'
@@ -391,3 +397,61 @@ MyLayout:
                 on_release:
                     root.submit()
                     root.clocked_switch()
+
+<InviteManager>:
+    FloatLayout:
+        Label:
+            text : 'Invite Manager'
+            pos_hint:{'y': .4}
+            font_size: '30dp'
+        Button:
+            text: "Accept Invite"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.55,'y':.5}
+            on_release: pass
+        TextInput:
+            id: "acceptInvite"
+            size_hint: .275,.05
+            pos_hint:{'x':.62,'y':.6}
+            label: 'acceptInvite'
+        Button:
+            text: "Invite User"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.05,'y':.5}
+            on_release: pass
+        TextInput:
+            id: "inviteUser"
+            size_hint: .275,.05
+            pos_hint:{'x':.10,'y':.6}
+            label: 'inviteUser'
+        Button:
+            text: "Add to Whitebox"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.55,'y':.2}
+            on_release: pass
+        TextInput:
+            id: "addToWhitebox"
+            size_hint: .275,.05
+            pos_hint:{'x':.62,'y':.3}
+            label: 'addToWhitebox'
+        Button:
+            text: "Add to BlackBox"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.05,'y': .2}
+            on_release: pass
+        TextInput:
+            id: "addToBlackbox"
+            size_hint: .275,.05
+            pos_hint:{'x':.10,'y':.3}
+            label: 'addToBlackbox'
+        Button:
+            text: "Back"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.29,'y': 0}
+            on_release: 
+                root.manager.current = 'GroupPage'
