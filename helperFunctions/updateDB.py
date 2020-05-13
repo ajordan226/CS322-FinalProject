@@ -47,11 +47,31 @@ def createGroup(user,groupName):
     db.collection(u'Project').document(groupName).set({'members' : [user]})
     db.collection(u'Project').document(groupName).document('forum').set({'count' = 0})
 
+def startGroupPoll(groupName,voteType,excludedVoter = ""):
+    pollReference = db.collection(u'Project').document(groupName).document(voteType + "poll")
+    groupProjectDoc = getProjectDocument(groupName)
+    groupMembers = groupProjectDoc['members']
+    voters = []
+    if excludedVoter.strip():
+        voters = groupProjectDoc['members'].remove(excludedVoter)
+    else:
+        voters = groupProjectDoc['members']
+    for voter in voters:
+        if pollType == "election":
+            info = getUserDocument(voter)
+            if info['VIP']:
+                pollReference.update({voter : None})
+        else:
+            pollReference.update({voter : None})
+
 def getUserDocument(user):
     return db.collection(u'User').document(user).get().to_dict()
 
 def getProjectDocument(groupName):
     return db.collection(u'Project').document(groupName).get().to_dict()
+
+def getPollDocument(groupName, voteType):
+    return db.collecion(u'Project').document(groupName).document(voteType+'poll')
 
 def changePass(user,newPass, newPassConfirm):
     userDocument = getUserDocument(user)
