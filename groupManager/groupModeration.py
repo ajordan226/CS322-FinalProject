@@ -5,26 +5,55 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'..','helperFunction'))
 import updateDB
 import poll
 
-def startGroupPoll(groupName,voteType,excludedVoter = ""):
-    groupProjectDoc = updateDB.getProjectDocument(groupName)
-    voters = []
-    if excludedVoter.strip():
-        voters = groupProjectDoc['members'].remove(excludedVoter)
+def full(groupName, voteType):
+    result = True
+    pollDoc = getPollDocument(groupName, voteType)
+    for answer in pollDoc.values():
+        result = result and (not answer is None)
+    return result
+
+
+def getWinners(groupName, voteType):
+    resultDict = {}
+    pollDoc = getPollDocument(groupName, voteType)
+    for answer in pollDoc.values():
+        resultDict[answer] = resultDict.get(answer,0) + 1
+    #counts the results
+    maxVal = max(resultDict.values())
+    #extracts the maximum value
+    tieList = []
+    for answer in resultDict.keys():
+        if resultDict[answer] == maxVal:
+            tieList.append(answer)
+    return tieList
+
+
+def checkPoll(groupName, voteType ,unanimous):
+    pollDoc = getPollDocument(groupName, voteType)
+    if unanimous:
+        result = True
+        for answer in pollDoc.values():
+            result = result and answer
+        return result
     else:
-        voters = groupProjectDoc['members']
-    groupPoll = poll.createPoll(voters)
-    groupProjectDoc.update({(voteType + "poll").encode("utf-8") : groupPoll})
+        #initialize an empty dictionary to count results
+        tieList = getWinners(groupName, voteType)
+        #extracts all
+        if len(tieList) == 1:
+            return True
+        else:
+            return False
 
+def vote(user, userVote, groupName, voteType, unanimous):
+    pollDoc = getPollDocument(groupName, voteType)
+    if pollDoc.has_key(user) and pollDoc[user] is None:
+        pollDoc[user] = userVote
+        if full(groupName, voteType):
+            if checkPoll(groupName, voteType, unanimous):
+                winner = getWinners(groupName, voteType)[0]
+                return winner
 
-#BLUEPRINT FOR VOTING FUNCTIONS FOR LATER SPECIFICATION
-#def voteInPoll(user,voteType,groupName):
-#    groupProjectDoc = updateDB.getProjectDocument(groupName)
-#    groupPoll = groupProjectDoc[(voteType+"poll")]
-#    poll.vote(user,groupPoll)
-#    if poll.full(groupPoll):
-#        pass #we might need to split this function up or just use if else
-#             #blocks to cover each case in this function
-
+"""
 def voteInWarning(user,groupName):
     groupProjectDoc = updateDB.getProjectDocument(groupName)
     groupPoll = groupProjectDoc['warningpoll']
@@ -44,24 +73,13 @@ def voteInKick(user,groupName):
             kickedUser = (set(groupProjectDoc['members']) - set(groupPoll.keys()))[0]
             updateDB.removeUserFromGroup(kickedUser,groupName)
             groupProjectDoc.update({u'groupkickpoll' : {}})
+"""
 
-def startSUElection(groupName,electionType):
-    groupProjectDoc = updateDB.getProjectDocument(groupName)
-    groupMembers = groupProjectDoc['members']
-    vipVoters = []
-    for member in groupMembers:
-        info = updateDB.getUserDocument(member)
-        if info['VIP']:
-            vipVoters.append(member)
-    electionPoll = poll.createPoll(vipVoters)
-    groupProjectDoc['suElection'] = electionPoll
-
-def voteInElection(user,groupName):
-    groupProjectDoc = updateDB.getProjectDocument(groupName)
-    groupPoll = groupProjectDoc['suElection']
-    poll.vote(user,groupPoll)
-    if poll.full(groupPoll):
-        if poll.checkPoll(groupPoll,False):
-            newSU = poll.getWinners(poll)[0]
-            userDocument = updateDB.getUserDocument(newSU)
-            userDocument['SU'] = True
+def voteInElection(user, userVote, groupName):
+    electionDoc = db.collection(u'Project').document(groupName).document("suElection").get().to_dict()
+    if electionDoc.has_key(user) and pollDoc[user] is None:
+        electionDoc[user] = userVote
+        if full(groupName, voteType):
+            if checkPoll(groupName, voteType, unanimous):
+                winner = getWinners(groupName, voteType)[0]
+                return winner
