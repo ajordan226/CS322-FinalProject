@@ -147,16 +147,15 @@ class Register(Screen):
             p.open()
 
 class GroupPage(Screen):
-    groupName = StringProperty('')
-
-    def groupNameUpdate(self,instance,name):
+    
+    def on_enter(self):
         self.ids.groupPageName.text = MyApp.currentGroup
 
 class Moderation(Screen):
     pass
 class ChangePassword(Screen):
     def __init__(self,**kwargs):
-        super(MessageBoard,self).__init__(**kwargs)
+        super(ChangePassword,self).__init__(**kwargs)
 
     def changePassw(self):
         userDocument = getUserDocument(MyApp.loggedUser)
@@ -166,8 +165,8 @@ class ChangePassword(Screen):
             print("Passwords do not match")
         else:
             newPassHash = hash(self.ids.NewPassword.text)
-            userDocument.update({'key' : newPassHash['key']})
-            userDocument.update({'salt' : newPassHash['salt']})
+            db.collection(u'User').document(MyApp.loggedUser).update({'key' : newPassHash['key'], 'salt' : newPassHash['salt']})
+            print('changed')
 
 class Projects(Screen):
 
@@ -218,7 +217,7 @@ class SelectableButton(Button):
         app.root.scr_mngr.current = "GroupPage"
 
     def on_press(self):
-        MyApp.currenGroup = self.text
+        MyApp.currentGroup = self.text
         print(MyApp.currentGroup)
 
 
