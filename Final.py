@@ -1,32 +1,27 @@
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-from kivy.uix.popup import Popup
-from kivy.app import App
-from kivy.lang import Builder
-from kivy.core.window import Window
-from firebase_admin import credentials
-from kivy.uix.screenmanager import Screen,ScreenManager
-from kivy.uix.label import Label
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.floatlayout import FloatLayout
-from kivy.properties import ObjectProperty
-from kivy.uix.button import Button
-from kivy.uix.recycleview.views import RecycleDataViewBehavior
-from Projects import SelectableRecycleGridLayout
-from kivy.uix.recycleview import RecycleView
-from kivy.properties import ObjectProperty, StringProperty,BooleanProperty,ListProperty
-from kivy.uix.popup import Popup
-from kivy.clock import Clock
-import re
-from backports.pbkdf2 import pbkdf2_hmac
-from helperFunctions.registrationStuff import *
-from helperFunctions.emailsender import sendMail
-from helperFunctions.updateDB import *
-
-
+from imports import *
 
 Window.size = (1024,768)
+
+class VoteScreen(Screen):
+    
+    data_voteinfo = ListProperty([])
+
+    def __init__(self,**kwargs):
+        super(VoteScreen,self).__init__(**kwargs)
+        self.getVotes()
+
+    def on_enter(self):
+        self.getVotes()
+    
+    def voteNow(self):
+        vote
+
+    def getVotes(self):
+        self.data_voteinfo.clear()
+        docs = db.collection(u'Project').document(MyApp.currentGroup).collection('polls').document(MyApp.polltype).get().to_dict()
+        for voter in docs.keys():
+           self.data_voteinfo.append([voter,docs[voter]])
+        print(self.data_voteinfo)
 
 class PollScreen(Screen):
     data_polls = ListProperty([])
@@ -284,10 +279,11 @@ class SelectableButton(Button):
 class pollButton(Button):
 
     def on_release(self):
-        pass
+        app=App.get_running_app()
+        app.root.scr_mngr.current = "VoteScreen"
     
     def on_press(self):
-        pass
+        MyApp.polltype = self.text
 
 class userSelectableButton(Button):
 
@@ -309,9 +305,10 @@ class messageBoardLabel(Label):
 class MyApp(App):
 
     loggedUser = ''
-    currentGroup = 'grouptest'
+    currentGroup = 'testingAgain'
     groupUserPage = ''
     currentRep = 0
+    polltype = 'votekickpoll'
 
 
     def build(self):
