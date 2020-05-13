@@ -17,12 +17,13 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 def inviteUser(sender, receiver, groupName):
-    userDocument = updateDB.getUserDocument(receiver)
-    if sender in userDocument['whitelist']:
-        groupProjectDoc = updateDB.getProjectDocument(groupName)
-        newMemberList = groupProjectDoc["members"].append(receiver)
-        groupProjectDoc.update({u'members' : newMemberList})
-        emailsender.sendMail(userDocument['email'],"Invite to " + groupName, "Hello you have recieved an invite to " + groupName + ". This was a whitelisted user so you have immediete access")
+    if updateDB.userExists(receiver):
+        userDocument = updateDB.getUserDocument(receiver)
+        if sender in userDocument['whitelist']:
+            groupProjectDoc = updateDB.getProjectDocument(groupName)
+            newMemberList = groupProjectDoc["members"].append(receiver)
+            groupProjectDoc.update({u'members' : newMemberList})
+            emailsender.sendMail(userDocument['email'],"Invite to " + groupName, "Hello you have recieved an invite to " + groupName + ". This was a whitelisted user so you have immediete access")
 
     #### Initializes random string as invite passcode
     elif not sender in userDocument['blacklist']:
