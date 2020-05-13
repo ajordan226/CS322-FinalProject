@@ -23,15 +23,44 @@ from backports.pbkdf2 import pbkdf2_hmac
 from helperFunctions.registrationStuff import *
 from helperFunctions.emailsender import sendMail
 from helperFunctions.updateDB import *
-from groupManager.groupInvite import *
-from groupManager.groupModeration import *
+
 
 
 Window.size = (1024,768)
 
-class InviteManager(Screen):
+class PollScreen(Screen):
+    data_polls = ListProperty([])
+
     def __init__(self,**kwargs):
-        super(InviteManager,self).__init__(**kwargs)
+        super(PollScreen,self).__init__(**kwargs)
+        self.getPolls()
+
+    def on_enter(self):
+        self.getPolls()
+
+
+    def getPolls(self):
+        self.data_polls.clear()
+        docs = db.collection(u'Project').document(MyApp.currentGroup).collection('polls').stream()
+        for doc in docs:
+           self.data_polls.append(doc.id)
+        print(self.data_polls)
+
+class InviteManager(Screen):
+
+    def acceptInv(self):
+        acceptInvite(MyApp.loggedUser, MyApp.currentGroup, self.ids.acceptInvite.text)
+
+    def invUser(self):
+        if isMember(MyApp.loggedUser, MyApp.currentGroup):
+            inviteUser(MyApp.loggedUser, self.ids.inviteUser.text, MyApp.currentGroup)
+
+    def addWhite(self):
+        addWhiteList(MyApp.loggedUser, self.ids.addToWhitebox.text)
+
+    def addBlack(self):
+        addBlackList(MyApp.loggedUser, self.ids.addToBlackbox.text)
+
 
     def acceptInv(self):
         acceptInvite(MyApp.loggedUser, MyApp.currentGroup, self.ids.acceptInvite.text)
@@ -51,6 +80,14 @@ class GroupUserPage(Screen):
     def on_enter(self):
         self.ids.Reputation.text = "Reputation Score: " + str(MyApp.currentRep)
 
+    def voteKick(self):
+        startGroupPoll(MyApp.currentGroup,'votekick',MyApp.groupUserPage)
+    
+    def warning(self):
+        startGroupPoll(MyApp.currentGroup,'warning',MyApp.groupUserPage)
+
+    def compliment(self):
+        pass
 
 class MessageBoard(Screen):
     data_messages = ListProperty([])
@@ -226,8 +263,7 @@ class newEntry(Screen):
 
     def submit(self):
         createGroup(MyApp.loggedUser,self.project_name.text,self.project_info.text)
-
-
+        
     def switch_screenback(self,*args):
         app = App.get_running_app()
         app.root.scr_mngr.current = "Projects"
@@ -245,6 +281,13 @@ class SelectableButton(Button):
         MyApp.currentGroup = self.text
         print(MyApp.currentGroup)
 
+class pollButton(Button):
+
+    def on_release(self):
+        pass
+    
+    def on_press(self):
+        pass
 
 class userSelectableButton(Button):
 
