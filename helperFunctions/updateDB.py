@@ -106,6 +106,10 @@ def isMember(user,groupName):
     groupProjectDoc = getProjectDocument(groupName)
     return user in groupProjectDoc['members']
 
+def getMembers(groupName):
+    groupProjectDoc = getProjectDocument(groupName)
+    return groupProjectDoc['members']
+
 def banUser(userToRemove):
     userDocument = getUserDocument(userToRemove)
     db.collection(u'Blacklist').document(userToRemove).set({u'email' : userDocument['email'], u'realname' : userDocument['realname']})
