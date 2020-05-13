@@ -2,8 +2,6 @@ import sys, os
 import random
 import string
 
-print(sys.path)
-
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'helperFunctions'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
 import emailsender
@@ -25,7 +23,7 @@ def inviteUser(sender, receiver, groupName):
         newMemberList = groupProjectDoc["members"].append(receiver)
         groupProjectDoc.update({u'members' : newMemberList})
         emailsender.sendMail(userDocument['email'],"Invite to " + groupName, "Hello you have recieved an invite to " + groupName + ". This was a whitelisted user so you have immediete access")
-        userDocument.update({ (groupName+"InviteCode").encode("utf-8") : randStr})
+        userDocument.update({ (groupName+"InviteCode") : randStr})
 
     #### Initializes random string as invite passcode
     elif not sender in userDocument['blacklist']:
@@ -35,7 +33,7 @@ def inviteUser(sender, receiver, groupName):
             randStr = randStr + random.choice(letters) #iterativly append random ascii chars to a string
         #####
         emailsender.sendMail(userDocument['email'],"Invite to " + groupName, "Hello you have recieved an invite to " + groupName +". Enter the following code to enter: " + randStr)
-        userDocument.update({ (groupName+"InviteCode").encode("utf-8") : randStr})
+        userDocument.update({ (groupName+"InviteCode") : randStr})
     else:
         pass
 

@@ -72,7 +72,7 @@ MyLayout:
     FloatLayout:
         Label:
             pos_hint:{'x':-.15,'y':.4}
-            font_size: '30dp'            
+            font_size: '30dp'
             text: "Username:"
         TextInput:
             id: username
@@ -116,13 +116,13 @@ MyLayout:
             font_size: '30dp'
             size_hint: .4,.075
             pos_hint:{'x':.29,'y':.05}
-            on_release: 
+            on_release:
                 root.register(username,realname,email,credentials,reference)
 <Login>:
     FloatLayout:
         Label:
             pos_hint:{'x':-.15,'y':.1}
-            font_size: '30dp'            
+            font_size: '30dp'
             text: "Username:"
         TextInput:
             id: user
@@ -144,9 +144,9 @@ MyLayout:
             font_size: '30dp'
             size_hint: .4,.075
             pos_hint:{'x':.29,'y':.4}
-            on_release: 
+            on_release:
                 root.verifyLogin(user, password)
-            
+
 
 <GroupPage>:
     pos_hint: {'x':.125,'y':0.0125}
@@ -170,11 +170,11 @@ MyLayout:
                     root.manager.current = 'Projects'
             Button:
                 text: 'Poll'
-                
+
 
 
 <Projects>:
-    
+
     RelativeLayout:
         Label:
             id: 'currentGroup'
@@ -229,7 +229,7 @@ MyLayout:
                     height: self.minimum_height
                     orientation: 'vertical'
                     multiselect: False
-					                   
+
 <newEntry>:
     project_name:projectName
     project_info:projectInfo
@@ -249,12 +249,12 @@ MyLayout:
             text: 'Project Description'
             font_size: 25
             pos_hint: {'x':0,'y':.25}
-        TextInput: 
+        TextInput:
             id:projectInfo
             size_hint: .75,.35
             pos_hint:{'x':.125,'y':.35}
-  
- 
+
+
         BoxLayout:
             orientation:'horizontal'
             pos_hint:{'x':0,'y':0}
@@ -270,7 +270,3 @@ MyLayout:
                 on_release:
                     root.submit()
                     root.clocked_switch()
-
-
-        
-            
