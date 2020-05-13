@@ -47,7 +47,7 @@ def checkPoll(groupName, voteType ,unanimous):
 def vote(user, userVote, groupName, voteType, unanimous):
     pollDoc = getPollDocument(groupName, voteType)
     if pollDoc.has_key(user) and pollDoc[user] is None:
-        pollDoc[user] = userVote
+        pollDoc.update({user : userVote})
         if full(groupName, voteType):
             if checkPoll(groupName, voteType, unanimous):
                 winner = getWinners(groupName, voteType)[0]
@@ -78,7 +78,7 @@ def voteInKick(user,groupName):
 def voteInElection(user, userVote, groupName):
     electionDoc = db.collection(u'Project').document(groupName).document("suElection").get().to_dict()
     if electionDoc.has_key(user) and pollDoc[user] is None:
-        electionDoc[user] = userVote
+        electionDoc.update({user : userVote})
         if full(groupName, voteType):
             if checkPoll(groupName, voteType, unanimous):
                 winner = getWinners(groupName, voteType)[0]
