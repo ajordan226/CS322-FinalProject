@@ -47,6 +47,8 @@ MyLayout:
                 name: 'Moderation'
             MessageBoard:
                 name: 'MessageBoard'
+            UserList:
+                name: 'UserList'
 <SuccessPopup>:
     auto_dismiss: True
     title: ""
@@ -160,6 +162,8 @@ MyLayout:
                 text: 'MessageBoard'
             Button:
                 text: 'UserList'
+                on_press:
+                    root.manager.current = 'UserList'
             Button:
                 text: 'Back'
                 on_release:
@@ -172,6 +176,9 @@ MyLayout:
 <Projects>:
     
     RelativeLayout:
+        Label:
+            id: 'currentGroup'
+            font_size:'44dp'
         Button:
             text: 'Create New Project'
             pos_hint: {'x':.25,'y':.05}
@@ -195,7 +202,33 @@ MyLayout:
                     orientation: 'vertical'
                     multiselect: False
                     
-                    
+<UserList>:
+    RelativeLayout:
+        Label:
+            id: 'currentGroup'
+            font_size:'44dp'
+        Button:
+            text: 'Create New Project'
+            pos_hint: {'x':.25,'y':.05}
+            size_hint:(.5,.1)
+            on_release:
+                root.manager.current = 'newEntry'
+        RelativeLayout:
+            size_hint:(1,.75)
+            pos_hint: {'x':.10,'y':.2}
+            RecycleView:
+                viewclass: 'SelectableButton'
+                size_hint:(.8,.9)
+                data: [{'text': str(x)} for x in root.data_users]
+                SelectableRecycleGridLayout:
+                    id: rv
+                    cols: 4
+                    default_size: None, dp(45)
+                    default_size_hint: .9, None
+                    size_hint_y: None
+                    height: self.minimum_height
+                    orientation: 'vertical'
+                    multiselect: False                   
 					                   
 <newEntry>:
     project_name:projectName
