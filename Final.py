@@ -152,7 +152,20 @@ class GroupPage(Screen):
 class Moderation(Screen):
     pass
 class ChangePassword(Screen):
-    pass
+    def __init__(self,**kwargs):
+        super(MessageBoard,self).__init__(**kwargs)
+
+    def changePassw(self):
+        userDocument = getUserDocument(MyApp.loggedUser)
+        if not passwordValid(self.ids.NewPassword.text):
+            print("Password must be mixed case at least 6 characters, be mixed case, and have a number")
+        elif self.ids.NewPassword.text != self.ids.ConfirmPassword.text:
+            print("Passwords do not match")
+        else:
+            newPassHash = hash(self.ids.NewPassword.text)
+            userDocument.update({'key' : newPassHash['key']})
+            userDocument.update({'salt' : newPassHash['salt']})
+
 class Projects(Screen):
 
     data_projects = ListProperty([])
@@ -200,7 +213,7 @@ class SelectableButton(Button):
     def on_release(self):
         app = App.get_running_app()
         app.root.scr_mngr.current = "GroupPage"
-    
+
     def on_press(self):
         MyApp.currenGroup = self.text
         print(MyApp.currentGroup)
