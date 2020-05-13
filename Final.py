@@ -26,7 +26,8 @@ from helperFunctions.updateDB import *
 
 
 Window.size = (1024,768)
-
+class GroupUserPage(Screen):
+    pass
 
 class MessageBoard(Screen):
     data_messages = ListProperty([])
@@ -146,7 +147,10 @@ class Register(Screen):
             p.open()
 
 class GroupPage(Screen):
-    pass
+    
+    def changeLabel(self):
+        self.ids.groupPageName.text = MyApp.currentGroup
+
 class Moderation(Screen):
     pass
 
@@ -201,9 +205,12 @@ class SelectableButton(Button):
         app.root.scr_mngr.current = "GroupPage"
 
 class userSelectableButton(Button):
-    pass
-    '''def on_release(self):
-        app = App.get_running'''
+
+    def on_release(self):
+        app = App.get_running_app()
+        MyApp.groupUserPage = self.text
+        print(MyApp.groupUserPage)
+        app.root.scr_mngr.current = "GroupUserPage"
 
 
 class messageBoardLabel(Label):
@@ -213,6 +220,7 @@ class MyApp(App):
 
     loggedUser = ''
     currentGroup = 'grouptest'
+    groupUserPage = ''
 
 
     def build(self):
