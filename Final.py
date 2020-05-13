@@ -14,7 +14,7 @@ class VoteScreen(Screen):
         self.getVotes()
     
     def voteNow(self):
-        vote
+        pass
 
     def getVotes(self):
         self.data_voteinfo.clear()
@@ -309,6 +309,7 @@ class MyApp(App):
     groupUserPage = ''
     currentRep = 0
     polltype = 'votekickpoll'
+    checking = ['hi','to','you']
 
 
     def build(self):

@@ -42,3 +42,4 @@ from backports.pbkdf2 import pbkdf2_hmac
 from helperFunctions.registrationStuff import *
 from helperFunctions.emailsender import sendMail
 from helperFunctions.updateDB import *
+from kivy.uix.spinner import Spinner
