@@ -45,7 +45,8 @@ def registerPotentialUser(user):
 
 def createGroup(user,groupName):
     db.collection(u'Project').document(groupName).set({'members' : [user], 'name' : groupName})
-    #db.collection(u'Project').document(groupName).document('forum').set({'count' : 0})
+
+    db.collection(u'Project').document(groupName).collection('f').document('forum').set({'count' : 0})
 
 def startGroupPoll(groupName,voteType,excludedVoter = ""):
     pollReference = db.collection(u'Project').document(groupName).document(voteType + "poll")
@@ -150,6 +151,8 @@ def userExists(user):
 
 bad_words = ["poop","butt","pee","github","bitbucket","gitlab"]
 
+#[user,msg]
+
 def addMessage(user, groupName, message):
     forumPosts = db.collection(groupName).document('forum').get().to_dict()
     newCount = forumPosts['count'] + 1
@@ -157,10 +160,12 @@ def addMessage(user, groupName, message):
     for i in range(len(msgList)):
         if msgList[i] in bad_words:
             msgList[i] = "FeelsBad"
-    forumPosts['post' + newCount] = [user," ".join(msgList)]
+    db.collection(u'Project').document(groupName).collection('f').document('forum').update({'post'+newCount : [user," ".join(msgList)]})
+
+#[[usr1,msg1],[us]]
 
 def getMessages(groupName):
-    forumPosts = db.collection(groupName).document('forum').get().to_dict()
+    forumPosts = db.collection(u'Project').document(groupName).collection('f').document('forum').get().to_dict()
     count = forumPosts['count']
     postList = []
     for i in range(1,count+1):
