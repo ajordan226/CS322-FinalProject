@@ -25,6 +25,22 @@ from helperFunctions.updateDB import *
 
 
 Window.size = (1024,768)
+class UserList(Screen):
+     
+    data_users = ListProperty([])
+    
+    def __init__(self,**kwargs):
+        super(UserList,self).__init__(**kwargs)
+        self.getUsers()
+
+    def on_enter(self):
+        self.getUsers()
+
+    '''def getUsers(self,groupName):
+        needs to get members from a group
+
+        for doc in members:
+           append users to self.datausers'''
 
 class Login(Screen):
     def verifyLogin(self,user,password):
@@ -62,7 +78,7 @@ class Register(Screen):
         email = str(self.ids.email.text)
         credentials = str(self.ids.credentials.text)
         reference = str(self.ids.reference.text)
-        p = SuccessPopup
+        p = SuccessPopup()
         if usernameValid(username):
             if (not userExists(username)):
                 if (realname.strip()):
@@ -80,23 +96,23 @@ class Register(Screen):
                             registerPotentialUser(username)
                         else:
                             print("Reference does not exist")
-                            p.ids.textLable.text = "Reference does not exist!"
+                            p.ids.textLabel.text = "Reference does not exist!"
                             p.open()
                     else:
                         print("Credentials field is empty")
-                        p.ids.textLable.text = "Credentials field is empty!"
+                        p.ids.textLabel.text = "Credentials field is empty!"
                         p.open()
                 else:
                     print("Name field is empty")
-                    p.ids.textLable.text = "Name field is empty!"
+                    p.ids.textLabel.text = "Name field is empty!"
                     p.open()
             else:
                 print("Username already exists")
-                p.ids.textLable.text = "Username already exists!"
+                p.ids.textLabel.text = "Username already exists!"
                 p.open()
         else:
             print("A username must be alphanumeric only")
-            p.ids.textLable.text = "A username must be alphanumeric only"
+            p.ids.textLabel.text = "A username must be alphanumeric only"
             p.open()
 
 class GroupPage(Screen):
@@ -156,11 +172,15 @@ class SelectableButton(Button):
 
     def on_release(self):
         app = App.get_running_app()
+        MyApp.currentGroup = self.text
         app.root.scr_mngr.current = "GroupPage"
 
 class MyApp(App):
+    
     loggedUser = ''
 
+    currentGroup = ''
+    
     def build(self):
         return Builder.load_file('Final.kv')
 
