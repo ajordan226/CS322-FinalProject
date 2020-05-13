@@ -39,26 +39,31 @@ def registerPotentialUser(user):
         randStr = randStr + random.choice(letters) #iterativly append random ascii chars to a string
     #####
     hashedPass = hash(randStr)
-    db.collection(u'User').document(user).set({'name' : info['name'], 'email' : info['email'], 'cred' : info['cred'], 'ref' : info['ref'], 'reputation' : 0, 'key' : hashedPass['key'], 'salt': hashedPass['salt'], 'whitelist' : [], 'blacklist' : []})
+    db.collection(u'User').document(user).set({'name' : info['name'], 'email' : info['email'], 'cred' : info['cred'], 'ref' : info['ref'], 'reputation' : 0, 'key' : hashedPass['key'], 'salt': hashedPass['salt'], 'whitelist' : [], 'blacklist' : [], 'VIP' : False})
     sendMail(info['email'],"Congrats on getting registered","Your temporary password is {passw} please login to change it.".format(passw = randStr))
     db.collection(u'PendingUser').document(user).delete()
 
 def createGroup(user,groupName, description):
     db.collection(u'Project').document(groupName).set({'members' : [user], 'name' : groupName, 'description' : description})
-    db.collection(u'Project').document(groupName).collection('forum')
+    db.collection(u'Project').document(groupName).collection('forum').set()
     db.collection(u'Project').document(groupName).collection('forumC').document('forumCount').set({'count' : 0})
+    db.collection(u'Project').document(groupName).collection('polls').document('votekickpoll').set({})
+    db.collection(u'Project').document(groupName).collection('polls').document('warningpoll').set({})
+    db.collection(u'Project').document(groupName).collection('polls').document('electionpoll').set({})
+    db.collection(u'Project').document(groupName).collection('polls').document('praisepoll').set({})
 
 def startGroupPoll(groupName,voteType,excludedVoter = ""):
-    pollReference = db.collection(u'Project').document(groupName).document(voteType + "poll")
+    pollReference = db.collection(u'Project').document(groupName).collection(u'polls').document(voteType + "poll")
     groupProjectDoc = getProjectDocument(groupName)
     groupMembers = groupProjectDoc['members']
     voters = []
     if excludedVoter.strip():
-        voters = groupProjectDoc['members'].remove(excludedVoter)
+        voters = groupProjectDoc['members']
+        voters.remove(excludedVoter)
     else:
         voters = groupProjectDoc['members']
     for voter in voters:
-        if pollType == "election":
+        if voteType == "election":
             info = getUserDocument(voter)
             if info['VIP']:
                 pollReference.update({voter : None})

@@ -60,6 +60,31 @@ MyLayout:
                 name: 'ChangePassword'
             InviteManager:
                 name: 'InviteManager'
+            PollScreen:
+                name: 'PollScreen'
+<PollScreen>:
+    RelativeLayout:
+        Button:
+            text: 'Back'
+            pos_hint:{'x':.35,'y':.05}
+            size_hint:(.33,.1)
+            on_release:
+                root.manager.current = "GroupPage"
+        RelativeLayout:
+            size_hint:(1,.5)
+            pos_hint: {'x':.10,'y':.5}
+            RecycleView:
+                viewclass: 'pollButton'
+                size_hint:(.8,.9)
+                data: [{'text': str(x)} for x in root.data_polls]
+                SelectableRecycleGridLayout:
+                    cols: 1
+                    default_size: None, dp(45)
+                    default_size_hint: .9, None
+                    size_hint_y: None
+                    height: self.minimum_height
+                    orientation: 'vertical'
+                    multiselect: False
 
 <ChangePassword>:
     FloatLayout:
@@ -92,8 +117,6 @@ MyLayout:
             size_hint: .4,.075
             pos_hint:{'x':.29,'y':.4}
             on_release: root.changePassw()
-
-<GroupUserPage>:
     
 
 <MessageBoard>:
@@ -261,6 +284,8 @@ MyLayout:
                     root.manager.current = 'UserList'
             Button:
                 text: 'Poll'
+                on_press:
+                    root.manager.current = 'PollScreen'
             Button:
                 text: 'Back'
                 on_release:
@@ -334,13 +359,13 @@ MyLayout:
             font_size: '30dp'
             size_hint: .4,.075
             pos_hint:{'x':.29,'y':.4}
-            on_release: pass
+            on_release: root.voteKick()
         Button:
             text: "Warning"
             font_size: '30dp'
             size_hint: .4,.075
             pos_hint:{'x':.29,'y':.3}
-            on_release: pass
+            on_release: root.warning()
         Button:
             text: "Compliment"
             font_size: '30dp'
@@ -428,7 +453,6 @@ MyLayout:
             id: inviteUser
             size_hint: .275,.05
             pos_hint:{'x':.10,'y':.6}
-            label: 'inviteUser'
         Button:
             text: "Add to Whitebox"
             font_size: '30dp'
