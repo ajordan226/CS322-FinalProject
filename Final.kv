@@ -52,15 +52,25 @@ MyLayout:
 
 <MessageBoard>:
     RelativeLayout:
+        TextInput:
+            id:message
+            pos_hint:{'x':.05,'y':.25}
+            size_hint:(.9,.2)
         Button:
-            text: 'Create New Project'
-            pos_hint: {'x':.25,'y':.05}
-            size_hint:(.5,.1)
+            text: 'Post'
+            pos_hint: {'x':.5,'y':.05}
+            size_hint:(.33,.1)
             on_release:
-                root.manager.current = 'newEntry'
+                root.post()
+        Button:
+            text: 'Back'
+            pos_hint:{'x':.15,'y':.05}
+            size_hint:(.33,.1)
+            on_release:
+                root.manager.current = "GroupPage"
         RelativeLayout:
-            size_hint:(1,.75)
-            pos_hint: {'x':.10,'y':.2}
+            size_hint:(1,.25)
+            pos_hint: {'x':.10,'y':.5}
             RecycleView:
                 viewclass: 'messageBoardLabel'
                 size_hint:(.8,.9)

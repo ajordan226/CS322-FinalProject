@@ -31,6 +31,7 @@ Window.size = (1024,768)
 class MessageBoard(Screen):
     data_messages = ListProperty([])
 
+
     def __init__(self,**kwargs):
         super(MessageBoard,self).__init__(**kwargs)
         self.populateMessages()
@@ -40,11 +41,15 @@ class MessageBoard(Screen):
 
     def populateMessages(self):
         self.data_messages.clear()
-        messages = getMessages(MyApp.currentGroup)
-        docs = db.collection(u'Project').document(groupName).collection("forum").order_by('msgNumber').stream()
+    
+        docs = db.collection(u'Project').document(MyApp.currentGroup).collection("forum").order_by('msgNumber').stream()
         for doc in docs:
             temp = doc.to_dict()
             self.data_messages.append(temp['msg'])
+        print(self.data_messages)
+    def post(self):
+        addMessage(MyApp.loggedUser,MyApp.currentGroup,self.ids.message.text)
+        self.populateMessages()
 
 
 class UserList(Screen):
