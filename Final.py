@@ -147,13 +147,12 @@ class Register(Screen):
             p.open()
 
 class GroupPage(Screen):
-
-    def changeLabel(self):
-        self.ids.groupPageName.text = MyApp.currentGroup
+    pass
 
 class Moderation(Screen):
     pass
-
+class ChangePassword(Screen):
+    pass
 class Projects(Screen):
 
     data_projects = ListProperty([])
@@ -164,6 +163,7 @@ class Projects(Screen):
 
     def on_enter(self):
         self.getProjects()
+
 
     def getProjects(self):
         self.data_projects.clear()
@@ -192,7 +192,6 @@ class newEntry(Screen):
         app = App.get_running_app()
         app.root.scr_mngr.current = "Projects"
 
-
     def clocked_switch(self):
         Clock.schedule_once(self.switch_screenback,.0)
 
@@ -200,9 +199,12 @@ class SelectableButton(Button):
 
     def on_release(self):
         app = App.get_running_app()
-        MyApp.currentGroup = self.text
-        print(MyApp.currentGroup)
         app.root.scr_mngr.current = "GroupPage"
+    
+    def on_press(self):
+        MyApp.currenGroup = self.text
+        print(MyApp.currentGroup)
+
 
 class userSelectableButton(Button):
 
