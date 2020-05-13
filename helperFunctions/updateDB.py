@@ -43,8 +43,8 @@ def registerPotentialUser(user):
     sendMail(info['email'],"Congrats on getting registered","Your temporary password is {passw} please login to change it.".format(passw = randStr))
     db.collection(u'PendingUser').document(user).delete()
 
-def createGroup(user,groupName):
-    db.collection(u'Project').document(groupName).set({'members' : [user], 'name' : groupName})
+def createGroup(user,groupName, description):
+    db.collection(u'Project').document(groupName).set({'members' : [user], 'name' : groupName, 'description' : description})
     db.collection(u'Project').document(groupName).collection('forum')
     db.collection(u'Project').document(groupName).collection('forumC').document('forumCount').set({'count' : 0})
 
