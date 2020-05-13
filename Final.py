@@ -28,8 +28,20 @@ from helperFunctions.updateDB import *
 Window.size = (1024,768)
 
 class InviteManager(Screen):
-    def __init__(self,**kwargs):
-        super(InviteManager,self).__init__(**kwargs)
+
+    def acceptInv(self):
+        acceptInvite(MyApp.loggedUser, MyApp.currentGroup, self.ids.acceptInvite.text)
+
+    def invUser(self):
+        if isMember(MyApp.loggedUser, MyApp.currentGroup):
+            inviteUser(MyApp.loggedUser, self.ids.inviteUser.text, MyApp.currentGroup)
+
+    def addWhite(self):
+        addWhiteList(MyApp.loggedUser, self.ids.addToWhitebox.text)
+
+    def addBlack(self):
+        addBlackList(MyApp.loggedUser, self.ids.addToBlackbox.text)
+
 
 class GroupUserPage(Screen):
     

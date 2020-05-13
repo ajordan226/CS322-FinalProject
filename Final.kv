@@ -412,9 +412,9 @@ MyLayout:
             font_size: '30dp'
             size_hint: .4,.075
             pos_hint:{'x':.55,'y':.5}
-            on_release: pass
+            on_release: root.acceptInv()
         TextInput:
-            id: "acceptInvite"
+            id: acceptInvite
             size_hint: .275,.05
             pos_hint:{'x':.62,'y':.6}
             label: 'acceptInvite'
@@ -423,9 +423,9 @@ MyLayout:
             font_size: '30dp'
             size_hint: .4,.075
             pos_hint:{'x':.05,'y':.5}
-            on_release: pass
+            on_release: root.invUser()
         TextInput:
-            id: "inviteUser"
+            id: inviteUser
             size_hint: .275,.05
             pos_hint:{'x':.10,'y':.6}
             label: 'inviteUser'
@@ -434,9 +434,9 @@ MyLayout:
             font_size: '30dp'
             size_hint: .4,.075
             pos_hint:{'x':.55,'y':.2}
-            on_release: pass
+            on_release: root.addWhite()
         TextInput:
-            id: "addToWhitebox"
+            id: addToWhitebox
             size_hint: .275,.05
             pos_hint:{'x':.62,'y':.3}
             label: 'addToWhitebox'
@@ -445,9 +445,9 @@ MyLayout:
             font_size: '30dp'
             size_hint: .4,.075
             pos_hint:{'x':.05,'y': .2}
-            on_release: pass
+            on_release: root.addBlack()
         TextInput:
-            id: "addToBlackbox"
+            id: addToBlackbox
             size_hint: .275,.05
             pos_hint:{'x':.10,'y':.3}
             label: 'addToBlackbox'
@@ -456,5 +456,5 @@ MyLayout:
             font_size: '30dp'
             size_hint: .4,.075
             pos_hint:{'x':.29,'y': 0}
-            on_release: 
+            on_release:
                 root.manager.current = 'GroupPage'

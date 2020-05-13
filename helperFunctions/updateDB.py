@@ -39,7 +39,7 @@ def registerPotentialUser(user):
         randStr = randStr + random.choice(letters) #iterativly append random ascii chars to a string
     #####
     hashedPass = hash(randStr)
-    db.collection(u'User').document(user).set({'name' : info['name'], 'email' : info['email'], 'cred' : info['cred'], 'ref' : info['ref'], 'reputation' : 0, 'key' : hashedPass['key'], 'salt': hashedPass['salt']})
+    db.collection(u'User').document(user).set({'name' : info['name'], 'email' : info['email'], 'cred' : info['cred'], 'ref' : info['ref'], 'reputation' : 0, 'key' : hashedPass['key'], 'salt': hashedPass['salt'], 'whitelist' : [], 'blacklist' : []})
     sendMail(info['email'],"Congrats on getting registered","Your temporary password is {passw} please login to change it.".format(passw = randStr))
     db.collection(u'PendingUser').document(user).delete()
 
@@ -94,8 +94,9 @@ def isBlacklisted(user):
 def appendToListAttrib(user,attrib,value):
     userDocument = getUserDocument(user)
     if value not in userDocument[attrib]:
-        newAttribList = userDocument[attrib].append(value)
-        userDocument.update({attrib : newAttribList})
+        newAttribList = userDocument[attrib]
+        newAttribList.append(value)
+        db.collection(u'User').document(user).update({attrib : newAttribList})
 
 def removeUserFromGroup(userToRemove,groupName):
     groupProjectDoc = getProjectDocument(groupName)
@@ -177,3 +178,124 @@ def getMessages(groupName):
         postList.append(forumPosts['post'+i])
     return forumPosts
 """
+#GroupInvite
+def inviteUser(sender, receiver, groupName):
+    if userExists(receiver):
+        userDocument = getUserDocument(receiver)
+        if sender in userDocument['whitelist']:
+            groupProjectDoc = getProjectDocument(groupName)
+            newMemberList = groupProjectDoc["members"].append(receiver)
+            db.collection(u'Project').document(groupName).update({u'members' : newMemberList})
+            sendMail(userDocument['email'],"Invite to " + groupName, "Hello you have recieved an invite to " + groupName + ". This was a whitelisted user so you have immediete access")
+
+    #### Initializes random string as invite passcode
+        elif not sender in userDocument['blacklist']:
+            letters = string.ascii_lowercase #gets set of lowercase ascii characters
+            randStr = ""
+            for i in range(8):
+                randStr = randStr + random.choice(letters) #iterativly append random ascii chars to a string
+            #####
+            sendMail(userDocument['email'],"Invite to " + groupName, "Hello you have recieved an invite to " + groupName +". Enter the following code to enter: " + randStr)
+            db.collection(u'User').document(receiver).update({ groupName+"InviteCode" : randStr})
+        else:
+            print("You are in this users blacklist D:")
+
+def acceptInvite(user, groupName, inviteCode):
+    userDocument = getUserDocument(user)
+    if inviteCode == userDocument[groupName+"InviteCode"]:
+        groupProjectDoc = getProjectDocument(groupName)
+        newMemberList = groupProjectDoc["members"]
+        newMemberList.append(user)
+        db.collection(u'Project').document(groupName).update({u'members' : newMemberList})
+        return True
+    else:
+        return False
+
+def addWhiteList(user,userToAdd):
+    appendToListAttrib(user,"whitelist",userToAdd)
+
+
+def addBlackList(user,userToAdd):
+    appendToListAttrib(user,"blacklist",userToAdd)
+
+
+#election
+
+def full(groupName, voteType):
+    result = True
+    pollDoc = getPollDocument(groupName, voteType)
+    for answer in pollDoc.values():
+        result = result and (not answer is None)
+    return result
+
+
+def getWinners(groupName, voteType):
+    resultDict = {}
+    pollDoc = getPollDocument(groupName, voteType)
+    for answer in pollDoc.values():
+        resultDict[answer] = resultDict.get(answer,0) + 1
+    #counts the results
+    maxVal = max(resultDict.values())
+    #extracts the maximum value
+    tieList = []
+    for answer in resultDict.keys():
+        if resultDict[answer] == maxVal:
+            tieList.append(answer)
+    return tieList
+
+
+def checkPoll(groupName, voteType ,unanimous):
+    pollDoc = getPollDocument(groupName, voteType)
+    if unanimous:
+        result = True
+        for answer in pollDoc.values():
+            result = result and answer
+        return result
+    else:
+        #initialize an empty dictionary to count results
+        tieList = getWinners(groupName, voteType)
+        #extracts all
+        if len(tieList) == 1:
+            return True
+        else:
+            return False
+
+def vote(user, userVote, groupName, voteType, unanimous):
+    pollDoc = getPollDocument(groupName, voteType)
+    if pollDoc.has_key(user) and pollDoc[user] is None:
+        pollDoc.update({user : userVote})
+        if full(groupName, voteType):
+            if checkPoll(groupName, voteType, unanimous):
+                winner = getWinners(groupName, voteType)[0]
+                return winner
+
+"""
+def voteInWarning(user,groupName):
+    groupProjectDoc = updateDB.getProjectDocument(groupName)
+    groupPoll = groupProjectDoc['warningpoll']
+    poll.vote(user,groupPoll)
+    if poll.full(groupPoll):
+        if poll.checkPoll(groupPoll, True):
+            warnedUser = (set(groupProjectDoc['members']) - set(groupPoll.keys()))[0]
+            updateDB.update_warnings(warnedUser,groupName)
+            groupProjectDoc.update({u'warningpoll' : {}})
+
+def voteInKick(user,groupName):
+    groupProjectDoc = updateDB.getProjectDocument(groupName)
+    groupPoll = groupProjectDoc['groupkickpoll']
+    poll.vote(user,groupPoll)
+    if poll.full(groupPoll):
+        if poll.checkPoll(groupPoll, True):
+            kickedUser = (set(groupProjectDoc['members']) - set(groupPoll.keys()))[0]
+            updateDB.removeUserFromGroup(kickedUser,groupName)
+            groupProjectDoc.update({u'groupkickpoll' : {}})
+"""
+
+def voteInElection(user, userVote, groupName):
+    electionDoc = db.collection(u'Project').document(groupName).document("suElection").get().to_dict()
+    if electionDoc.has_key(user) and pollDoc[user] is None:
+        electionDoc.update({user : userVote})
+        if full(groupName, voteType):
+            if checkPoll(groupName, voteType, unanimous):
+                winner = getWinners(groupName, voteType)[0]
+                return winner
