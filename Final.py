@@ -32,15 +32,18 @@ class UserList(Screen):
     def __init__(self,**kwargs):
         super(UserList,self).__init__(**kwargs)
         self.getUsers()
+        
 
     def on_enter(self):
         self.getUsers()
+    
+    def getUsers(self):
+        self.data_users.clear()
+        members = getMembers(MyApp.currentGroup)
+        for i in members:
+            self.data_users.append(i)
 
-    '''def getUsers(self,groupName):
-        needs to get members from a group
 
-        for doc in members:
-           append users to self.datausers'''
 
 class Login(Screen):
     def verifyLogin(self,user,password):
@@ -152,12 +155,12 @@ class newEntry(Screen):
     project_info = ObjectProperty(None)
     
     def submit(self):
-
-        data = {
+        createGroup(MyApp.loggedUser,self.project_name.text)
+        '''data = {
             u'info': self.project_info.text,
             u'name': self.project_name.text
         }
-        db.collection(u'Project').document().set(data)
+        db.collection(u'Project').document(self.project_name.text).set(data)'''
         
 
     def switch_screenback(self,*args):
@@ -173,12 +176,13 @@ class SelectableButton(Button):
     def on_release(self):
         app = App.get_running_app()
         MyApp.currentGroup = self.text
+        print(MyApp.currentGroup)
         app.root.scr_mngr.current = "GroupPage"
 
 class MyApp(App):
     
     loggedUser = ''
-    currentGroup = ''
+    currentGroup = 'grouptest'
     
     def build(self):
         return Builder.load_file('Final.kv')

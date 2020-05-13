@@ -44,8 +44,8 @@ def registerPotentialUser(user):
     db.collection(u'PendingUser').document(user).delete()
 
 def createGroup(user,groupName):
-    db.collection(u'Project').document(groupName).set({'members' : [user]})
-    db.collection(u'Project').document(groupName).document('forum').set({'count' : 0})
+    db.collection(u'Project').document(groupName).set({'members' : [user], 'name' : groupName})
+    #db.collection(u'Project').document(groupName).document('forum').set({'count' : 0})
 
 def startGroupPoll(groupName,voteType,excludedVoter = ""):
     pollReference = db.collection(u'Project').document(groupName).document(voteType + "poll")
@@ -105,6 +105,10 @@ def removeUserFromGroup(userToRemove,groupName):
 def isMember(user,groupName):
     groupProjectDoc = getProjectDocument(groupName)
     return user in groupProjectDoc['members']
+
+def getMembers(groupName):
+    groupProjectDoc = getProjectDocument(groupName)
+    return groupProjectDoc['members']
 
 def banUser(userToRemove):
     userDocument = getUserDocument(userToRemove)
