@@ -46,7 +46,7 @@ def registerPotentialUser(user):
 def createGroup(user,groupName):
     db.collection(u'Project').document(groupName).set({'members' : [user], 'name' : groupName})
     db.collection(u'Project').document(groupName).collection('forum')
-    db.collection(u'Project').document(groupName).collecion('forumC').document('forumCount').set({'count' : 0})
+    db.collection(u'Project').document(groupName).collection('forumC').document('forumCount').set({'count' : 0})
 
 def startGroupPoll(groupName,voteType,excludedVoter = ""):
     pollReference = db.collection(u'Project').document(groupName).document(voteType + "poll")
@@ -155,9 +155,9 @@ bad_words = ["poop","butt","pee","github","bitbucket","gitlab"]
 
 def addMessage(user, groupName, message):
     forumPosts = db.collection(u'Project').document(groupName).collection("forum")
-    newCount = db.collection(u'Project').document(groupName).collecion('forumC').document('forumCount').get().to_dict()['count'] + 1
-    db.collection(u'Project').document(groupName).collecion('forumC').document('forumCount').update({'count' : newCount})
-    msgList = message.split
+    newCount = db.collection(u'Project').document(groupName).collection('forumC').document('forumCount').get().to_dict()['count'] + 1
+    db.collection(u'Project').document(groupName).collection('forumC').document('forumCount').update({'count' : newCount})
+    msgList = message.split()
     for i in range(len(msgList)):
         if msgList[i] in bad_words:
             msgList[i] = "FeelsBad"
