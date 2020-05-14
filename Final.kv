@@ -66,25 +66,28 @@ MyLayout:
                 name: 'VoteScreen'
 <VoteScreen>:
     RelativeLayout:
-        TextInput:
-            text:'sucks'
-            pos_hint:{'x':.05,'y':.25}
-            size_hint:(.9,.2)
         Button:
-            text: 'Post'
+            text: 'Submit'
             pos_hint: {'x':.5,'y':.05}
             size_hint:(.33,.1)
             on_release:
-                root.post()
+                root.voteNow()
         Button:
             text: 'Back'
             pos_hint:{'x':.15,'y':.05}
             size_hint:(.33,.1)
             on_release:
                 root.manager.current = "GroupPage"
+        Spinner:
+            id: spinner
+            size_hint:(.33,.1)
+            pos_hint:{'x':.05,'y':.75}
+            text:"Kick?"
+            values: app.checking
+        
         RelativeLayout:
-            size_hint:(1,.5)
-            pos_hint: {'x':.10,'y':.5}
+            size_hint:(.5,.5)
+            pos_hint: {'x':.4,'y':.5}
             RecycleView:
                 viewclass: 'messageBoardLabel'
                 size_hint:(.8,.9)
