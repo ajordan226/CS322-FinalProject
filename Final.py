@@ -9,12 +9,41 @@ class VoteScreen(Screen):
     def __init__(self,**kwargs):
         super(VoteScreen,self).__init__(**kwargs)
         self.getVotes()
+        if MyApp.polltype != 'electionpoll':
+            MyApp.checking = ['yes', 'no']
+        else:
+            group = getProjectDocument(MyApp.currentGroup)
+            VIP =[]
+            members = group['members']
+            for member in members:
+                userDocument = getUserDocument(member)
+                if userDocument['VIP']:
+                    VIP.append(member)
+            MyApp.checking = VIP
 
     def on_enter(self):
         self.getVotes()
     
     def voteNow(self):
-        pass
+        userAnswer = self.ids.spinner.text
+        print(userAnswer)
+        systemVote = None
+        if userAnswer == 'yes':
+            systemVote =True
+        elif userAnswer == 'no':
+            systemVote = False
+        else:
+            systemVote = userAnswer
+
+        voteResult = ''
+        if MyApp.polltype != 'electionpoll':
+            voteResult = vote(MyApp.loggedUser, systemVote, MyApp.currentGroup, MyApp.polltype, True)
+        else:
+            voteResult = vote(MyApp.loggedUser, systemVote, MyApp.currentGroup, MyApp.polltype, False)
+        if voteResult != '':
+            if MyApp.polltype == 'votekickpoll':
+                removeUserFromGroup()
+
 
     def getVotes(self):
         self.data_voteinfo.clear()
@@ -304,7 +333,7 @@ class messageBoardLabel(Label):
 
 class MyApp(App):
 
-    loggedUser = ''
+    loggedUser = 'taqace'
     currentGroup = 'testingAgain'
     groupUserPage = ''
     currentRep = 0

@@ -66,9 +66,9 @@ def startGroupPoll(groupName,voteType,excludedVoter = ""):
         if voteType == "election":
             info = getUserDocument(voter)
             if info['VIP']:
-                pollReference.update({voter : None})
+                pollReference.update({voter : ""})
         else:
-            pollReference.update({voter : None})
+            pollReference.update({voter : ""})
 
 def getUserDocument(user):
     return db.collection(u'User').document(user).get().to_dict()
@@ -77,7 +77,7 @@ def getProjectDocument(groupName):
     return db.collection(u'Project').document(groupName).get().to_dict()
 
 def getPollDocument(groupName, voteType):
-    return db.collecion(u'Project').document(groupName).collection('polls').document(voteType).get().to_dict()
+    return db.collection(u'Project').document(groupName).collection('polls').document(voteType).get().to_dict()
 
 def changePass(user,newPass, newPassConfirm):
     userDocument = getUserDocument(user)
@@ -106,8 +106,9 @@ def appendToListAttrib(user,attrib,value):
 def removeUserFromGroup(userToRemove,groupName):
     groupProjectDoc = getProjectDocument(groupName)
     if userToRemove in groupProjectDoc['members']:
-        newMemberList = groupProjectDoc.remove(userToRemove)
-        groupProjectDoc.update({u'members' : newMemberList})
+        newMemberList = groupProjectDoc
+        newMemberList.remove(userToRemove)
+        db.collection(u'Project').document(groupName).update({u'members' : newMemberList})
 
 def isMember(user,groupName):
     groupProjectDoc = getProjectDocument(groupName)
@@ -279,12 +280,14 @@ def checkPoll(groupName, voteType ,unanimous):
 
 def vote(user, userVote, groupName, voteType, unanimous):
     pollDoc = getPollDocument(groupName, voteType)
-    if pollDoc.has_key(user) and pollDoc[user] is None:
+    if user in pollDoc.keys() and pollDoc[user] == "":
         db.collection(u'Project').document(groupName).collection('polls').document(voteType).update({user : userVote})
         if full(groupName, voteType):
             if checkPoll(groupName, voteType, unanimous):
                 winner = getWinners(groupName, voteType)[0]
                 return winner
+            else:
+                return ''
 
 """
 def voteInWarning(user,groupName):
