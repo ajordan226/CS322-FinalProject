@@ -39,7 +39,7 @@ def registerPotentialUser(user):
         randStr = randStr + random.choice(letters) #iterativly append random ascii chars to a string
     #####
     hashedPass = hash(randStr)
-    db.collection(u'User').document(user).set({'name' : info['name'], 'email' : info['email'], 'cred' : info['cred'], 'ref' : info['ref'], 'reputation' : 0, 'key' : hashedPass['key'], 'salt': hashedPass['salt'], 'whitelist' : [], 'blacklist' : [], 'VIP' : False,'BadWordsUsed' : []})
+    db.collection(u'User').document(user).set({'name' : info['name'], 'email' : info['email'], 'cred' : info['cred'], 'ref' : info['ref'], 'reputation' : 0, 'key' : hashedPass['key'], 'salt': hashedPass['salt'], 'whitelist' : [], 'blacklist' : [], 'VIP' : False,'BadWordsUsed' : [], 'warnings' : 0, 'compliments' : 0})
     sendMail(info['email'],"Congrats on getting registered","Your temporary password is {passw} please login to change it.".format(passw = randStr))
     db.collection(u'PendingUser').document(user).delete()
 
@@ -49,8 +49,8 @@ def createGroup(user,groupName, description):
     db.collection(u'Project').document(groupName).collection('forumC').document('forumCount').set({'count' : 0})
     db.collection(u'Project').document(groupName).collection('polls').document('votekickpoll').set({})
     db.collection(u'Project').document(groupName).collection('polls').document('warningpoll').set({})
-    db.collection(u'Project').document(groupName).collection('polls').document('electionpoll').set({})
-    db.collection(u'Project').document(groupName).collection('polls').document('praisepoll').set({})
+    #db.collection(u'Project').document(groupName).collection('polls').document('electionpoll').set({})
+    #db.collection(u'Project').document(groupName).collection('polls').document('praisepoll').set({})
 
 def startGroupPoll(groupName,voteType,excludedVoter = ""):
     pollReference = db.collection(u'Project').document(groupName).collection(u'polls').document(voteType + "poll")
@@ -106,7 +106,7 @@ def appendToListAttrib(user,attrib,value):
 def removeUserFromGroup(userToRemove,groupName):
     groupProjectDoc = getProjectDocument(groupName)
     if userToRemove in groupProjectDoc['members']:
-        newMemberList = groupProjectDoc
+        newMemberList = groupProjectDoc['members']
         newMemberList.remove(userToRemove)
         db.collection(u'Project').document(groupName).update({u'members' : newMemberList})
 
@@ -129,30 +129,31 @@ def update_rep(user, reputation):
         db.collection(u'User').document(user).update({'reputation' : info['reputation'] + reputation})
         if info['reputation'] + reputation < 0:
             banUser(user)
+        elif info['reputation'] + reputation < 25:
+            info['VIP'] = False
+        elif info['reputation'] + reputation >= 30:
+            info['VIP'] = True
 
 def update_warnings(user, groupName):
     if userExists(user):
         info = getUserDocument(user)
-        info['warnings']+=1
-    if info['warnings'] % 3 == 0:
-        update_rep(user, -5)
-        removeUserFromGroup(user, groupName)
-        if info['reputation'] < 0:
-            banUser(user)
-        elif info['reputation'] < 25:
-            info['VIP'] = False
+        newWarningCount = info['warnings'] + 1
+        db.collection(u'User').document(user).update({'warnings' : newWarningCount})
+        if (info['warnings'] + 1) % 3 == 0:
+            update_rep(user, -5)
+            removeUserFromGroup(user, groupName)
 
 def update_compliments(user):
     if userExists(user):
         info = getUserDocument(user)
-        info['compliments']+=1
-    if info['compliments'] % 3 == 0:
-        update_rep(user, 5)
-        if info['reputation'] >= 30:
-            info['VIP'] = True
+        newComplimentCount = info['compliments'] + 1
+        db.collection(u'User').document(user).update({'compliments' : newComplimentCount})
+        if (info['compliments'] + 1) % 3 == 0:
+            update_rep(user, 5)
+
 
 def disbandGroup(groupName):
-    getProjectDocument(groupName).delete()
+    db.collection(u'Project').document(groupName).delete()
     #destruction of GUI stuff
 
 def userExists(user):
@@ -243,7 +244,7 @@ def full(groupName, voteType):
     result = True
     pollDoc = getPollDocument(groupName, voteType)
     for answer in pollDoc.values():
-        result = result and (not answer is None)
+        result = result and answer != ""
     return result
 
 
@@ -280,7 +281,9 @@ def checkPoll(groupName, voteType ,unanimous):
 
 def vote(user, userVote, groupName, voteType, unanimous):
     pollDoc = getPollDocument(groupName, voteType)
+    print("here")
     if user in pollDoc.keys() and pollDoc[user] == "":
+        print("O_O")
         db.collection(u'Project').document(groupName).collection('polls').document(voteType).update({user : userVote})
         if full(groupName, voteType):
             if checkPoll(groupName, voteType, unanimous):
@@ -288,6 +291,16 @@ def vote(user, userVote, groupName, voteType, unanimous):
                 return winner
             else:
                 return ''
+
+def getMissingUser(groupName, voteType):
+    pollDoc = getPollDocument(groupName,voteType)
+    groupDoc = getProjectDocument(groupName)
+    members = groupDoc['members']
+    excludedVoter = None
+    for member in members:
+        if not member in pollDoc.keys():
+            excludedVoter = member
+    return member
 
 """
 def voteInWarning(user,groupName):

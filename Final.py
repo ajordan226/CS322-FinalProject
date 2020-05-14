@@ -3,7 +3,7 @@ from imports import *
 Window.size = (1024,768)
 
 class VoteScreen(Screen):
-    
+
     data_voteinfo = ListProperty([])
 
     def __init__(self,**kwargs):
@@ -23,7 +23,7 @@ class VoteScreen(Screen):
 
     def on_enter(self):
         self.getVotes()
-    
+
     def voteNow(self):
         userAnswer = self.ids.spinner.text
         print(userAnswer)
@@ -36,13 +36,22 @@ class VoteScreen(Screen):
             systemVote = userAnswer
 
         voteResult = ''
+        excludedMember = getMissingUser(MyApp.currentGroup, MyApp.polltype)
+
         if MyApp.polltype != 'electionpoll':
             voteResult = vote(MyApp.loggedUser, systemVote, MyApp.currentGroup, MyApp.polltype, True)
         else:
             voteResult = vote(MyApp.loggedUser, systemVote, MyApp.currentGroup, MyApp.polltype, False)
         if voteResult != '':
-            if MyApp.polltype == 'votekickpoll':
-                removeUserFromGroup()
+            if MyApp.polltype == 'votekickpoll' and voteResult:
+                removeUserFromGroup(excludedMember,MyApp.currentGroup)
+            elif MyApp.polltype == 'warningpoll' and voteResult:
+                update_warnings(excludedMember, MyApp.currentGroup)
+            elif MyApp.polltype == 'electionpoll':
+                db.collection(u'User').document(voteResult).update({'SU' : True})
+
+
+
 
 
     def getVotes(self):
@@ -106,12 +115,14 @@ class GroupUserPage(Screen):
 
     def voteKick(self):
         startGroupPoll(MyApp.currentGroup,'votekick',MyApp.groupUserPage)
-    
+
     def warning(self):
         startGroupPoll(MyApp.currentGroup,'warning',MyApp.groupUserPage)
 
-    def compliment(self):
-        pass
+    def complimentUser(self):
+        update_compliments(MyApp.groupUserPage)
+
+
 
 class MessageBoard(Screen):
     data_messages = ListProperty([])
@@ -131,7 +142,7 @@ class MessageBoard(Screen):
             temp = doc.to_dict()
             self.data_messages.append(temp['msg'])
         print(self.data_messages)
-    
+
     def post(self):
         addMessage(MyApp.loggedUser,MyApp.currentGroup,self.ids.message.text)
         self.populateMessages()
@@ -238,7 +249,15 @@ class GroupPage(Screen):
 
 
 class Moderation(Screen):
-    pass
+    def disband(self):
+        disbandGroup(self.ids.groupDisbandHammer.text)
+
+    def ban(self):
+        banUser(self.ids.banHammer.text)
+
+    def deduct(self):
+        update_rep(self.ids.userDeduct.text, -5)
+
 class ChangePassword(Screen):
     def __init__(self,**kwargs):
         super(ChangePassword,self).__init__(**kwargs)
@@ -287,7 +306,7 @@ class newEntry(Screen):
 
     def submit(self):
         createGroup(MyApp.loggedUser,self.project_name.text,self.project_info.text)
-        
+
     def switch_screenback(self,*args):
         app = App.get_running_app()
         app.root.scr_mngr.current = "Projects"
@@ -310,7 +329,7 @@ class pollButton(Button):
     def on_release(self):
         app=App.get_running_app()
         app.root.scr_mngr.current = "VoteScreen"
-    
+
     def on_press(self):
         MyApp.polltype = self.text
 

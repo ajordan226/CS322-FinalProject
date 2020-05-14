@@ -64,6 +64,51 @@ MyLayout:
                 name: 'PollScreen'
             VoteScreen:
                 name: 'VoteScreen'
+<Moderation>:
+    FloatLayout:
+        Label:
+            text : 'Moderation'
+            pos_hint:{'y': .4}
+            font_size: '30dp'
+        Button:
+            text: "Ban User"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.55,'y':.5}
+            on_release: root.ban()
+        TextInput:
+            id: banHammer
+            size_hint: .275,.05
+            pos_hint:{'x':.62,'y':.6}
+            label: 'acceptInvite'
+        Button:
+            text: "Disband Group"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.05,'y':.5}
+            on_release: root.disband()
+        TextInput:
+            id: groupDisbandHammer
+            size_hint: .275,.05
+            pos_hint:{'x':.10,'y':.6}
+        Button:
+            text: "Deduct Points"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.29,'y':.2}
+            on_release: root.deduct()
+        TextInput:
+            id: userDeduct
+            size_hint: .275,.05
+            pos_hint:{'x':.35,'y':.3}
+            label: 'addToWhitebox'
+        Button:
+            text: "Back"
+            font_size: '30dp'
+            size_hint: .4,.075
+            pos_hint:{'x':.29,'y': 0}
+            on_release:
+                root.manager.current = 'Projects'
 <VoteScreen>:
     RelativeLayout:
         Button:
@@ -84,7 +129,7 @@ MyLayout:
             pos_hint:{'x':.05,'y':.75}
             text:"Kick?"
             values: app.checking
-        
+
         RelativeLayout:
             size_hint:(.5,.5)
             pos_hint: {'x':.4,'y':.5}
@@ -99,7 +144,7 @@ MyLayout:
                     size_hint_y: None
                     height: self.minimum_height
                     orientation: 'vertical'
-                    multiselect: False            
+                    multiselect: False
 <PollScreen>:
     RelativeLayout:
         Button:
@@ -155,7 +200,7 @@ MyLayout:
             size_hint: .4,.075
             pos_hint:{'x':.29,'y':.4}
             on_release: root.changePassw()
-    
+
 
 <MessageBoard>:
     RelativeLayout:
@@ -409,13 +454,7 @@ MyLayout:
             font_size: '30dp'
             size_hint: .4,.075
             pos_hint:{'x':.29,'y':.2}
-            on_release: pass
-        Button:
-            text: "Complain"
-            font_size: '30dp'
-            size_hint: .4,.075
-            pos_hint:{'x':.29,'y':.1}
-            on_release: pass
+            on_release: root.complimentUser()
         Button:
             text: "Back"
             font_size: '30dp'
@@ -520,4 +559,3 @@ MyLayout:
             pos_hint:{'x':.29,'y': 0}
             on_release:
                 root.manager.current = 'GroupPage'
-
